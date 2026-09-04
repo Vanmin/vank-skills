@@ -1,0 +1,4 @@
+interface:
+  display_name: "VK Read"
+  short_description: "Help with VK Read tasks and workflows"
+  default_prompt: "Use $vk-read for this task and follow the skill contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vank"
+  short_description: "Project workflow suite with optional gstack delivery gates"
+  default_prompt: "Use $vank to route to the matching vk child skill; for non-trivial implementation, apply the gstack bridge only when its specialist gates match."

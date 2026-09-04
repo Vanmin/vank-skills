@@ -1,0 +1,4 @@
+interface:
+  display_name: "VK Restrict"
+  short_description: "Backend design gates across data flow, IO, and component dependencies"
+  default_prompt: "Use $vk-restrict to gate this backend design across data flow, IO, and dependencies."

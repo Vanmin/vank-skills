@@ -1,0 +1,4 @@
+interface:
+  display_name: "VK Roadmap"
+  short_description: "Analyze a directory and write a roadmap"
+  default_prompt: "Use $vk-roadmap to read the target directory and write a roadmap."

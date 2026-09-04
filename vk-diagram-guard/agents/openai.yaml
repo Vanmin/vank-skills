@@ -1,0 +1,4 @@
+interface:
+  display_name: "VK Diagram Guard"
+  short_description: "Help with VK Diagram Guard tasks"
+  default_prompt: "Use $vk-diagram-guard for this task and follow the skill contract."

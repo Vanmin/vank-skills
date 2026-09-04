@@ -1,0 +1,4 @@
+interface:
+  display_name: "VK Submit"
+  short_description: "Help with VK Submit tasks"
+  default_prompt: "Use $vk-submit for this task and follow the skill contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "VK Writer"
+  short_description: "Projectized long-form writing for WeChat articles"
+  default_prompt: "Use $vk-writer to turn this material into an article package with outline.md, style.md, and draft.md."

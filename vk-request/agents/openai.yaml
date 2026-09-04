@@ -1,0 +1,4 @@
+interface:
+  display_name: "VK Request"
+  short_description: "Help with VK Request tasks"
+  default_prompt: "Use $vk-request for this task and follow the skill contract."

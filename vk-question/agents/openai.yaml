@@ -1,0 +1,4 @@
+interface:
+  display_name: "VK Question"
+  short_description: "Help with VK Question tasks"
+  default_prompt: "Use $vk-question for this task and follow the skill contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "VK Work"
+  short_description: "Long-running subagent-first implementation controller"
+  default_prompt: "Use $vk-work for this task and follow the skill contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "VK Skill Man"
+  short_description: "Help with VK Skill Man tasks"
+  default_prompt: "Use $vk-skill-man for this task and follow the skill contract."

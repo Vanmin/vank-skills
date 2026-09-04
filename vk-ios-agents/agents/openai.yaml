@@ -1,0 +1,4 @@
+interface:
+  display_name: "VK Ios Agents"
+  short_description: "Help with VK Ios Agents tasks"
+  default_prompt: "Use $vk-ios-agents for this task and follow the skill contract."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "VK Write Lark"
+  short_description: "Preflight-first sync planning for Lark/Feishu article docs"
+  default_prompt: "Use $vk-write-lark to check the local article tree and target, then produce a Lark sync plan. Write to the cloud only when tools and the destination are explicit."

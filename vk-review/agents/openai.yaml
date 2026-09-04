@@ -1,0 +1,4 @@
+interface:
+  display_name: "VK Review"
+  short_description: "Help with VK Review tasks"
+  default_prompt: "Use $vk-review for this task and follow the skill contract."
