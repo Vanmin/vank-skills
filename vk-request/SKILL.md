@@ -1,6 +1,6 @@
 ---
 name: vk-request
-description: Compress natural-language intent into a structured prompt DSL aligned with MULTI-AGENT CODING ORCHESTRATION TEMPLATE V3-FINAL. Use when the user wants a prompt, DSL, system prompt, multi-agent template, or execution-controller template. Persist output under ./vk/request/ and keep that directory out of git.
+description: Compress natural-language intent into a structured prompt DSL aligned with MULTI-AGENT CODING ORCHESTRATION TEMPLATE V3-FINAL. Use when the user wants a prompt, DSL, system prompt, multi-agent template, or execution-controller template. Return inline unless the user asks to persist it under ./vk/request/.
 ---
 
 # vk-request
@@ -10,7 +10,7 @@ description: Compress natural-language intent into a structured prompt DSL align
 - Load `../shared/vk-core-contract.md` before acting.
 - Follow the shared result contract: start with a summary card, then structured body and Auto-evolution.
 - Local records go under `./vk/request/`.
-- After each run, besides the DSL body, add a result summary or Auto-evolution note under `./vk/request/`.
+- The requested DSL is the direct deliverable. Add a separate result summary or Auto-evolution note only when the shared selective-record policy warrants it.
 
 ## vk-restrict compatibility (required for backend schemes)
 
@@ -25,7 +25,7 @@ description: Compress natural-language intent into a structured prompt DSL align
 - Compress the user's goal into an executable prompt DSL, not a loose design essay.
 - Reuse the template skeleton and keep chapters `0` through `14`.
 - Make only the minimum assumptions required. Do not widen scope.
-- After producing the DSL, write `./vk/request/`.
+- Write the requested DSL to `./vk/request/` only when the user asked for a durable file; otherwise return it inline.
 
 ## What this skill is
 
@@ -100,7 +100,7 @@ Only a passing validation is a final answer. On failure, fix, save, and validate
 - `TASK_DAG` is a 2-4 node executable spine. No fake task padding.
 - Structure complete, content restrained. Do not pad empty chapters.
 
-## Persistence
+## Persistence (when a durable file is requested)
 
 - Directory: `./vk/request/`
 - Filename: `request-YYYYMMDD-HHMMSS-<slug>.md`
@@ -108,7 +108,7 @@ Only a passing validation is a final answer. On failure, fix, save, and validate
 - Frontmatter must include `title`, `created_at`, `source_request`, `template_version`
 - Save the structured result itself. Do not write a second summary.
 
-## Git hygiene
+## Git hygiene (when a durable file was created)
 
 - Migrate legacy record dirs first:
 
@@ -118,7 +118,8 @@ python3 "$VK_SKILLS_DIR/vank/vk-submit/scripts/migrate_vk_record_dirs.py" --repo
 ```
 
 - `./vk/request/` stays local and untracked.
-- Ensure `.gitignore` has `vk/` and `vk-*/`.
+- Ensure `.gitignore` has `vk/`; add `vk-*/` only when the repository is not
+  the Vank package source, where that pattern would ignore tracked child skills.
 - If staged by mistake: `git restore --staged -- vk/ 'vk-*'`
 
 ## Template boundary

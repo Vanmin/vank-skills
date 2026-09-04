@@ -103,10 +103,12 @@ question / read / roadmap → request → restrict → work → review → submi
 
 ## 本地记录
 
-技能执行记录写在 **目标项目** 里，不写进本包：
+只有重要的技能执行记录才写在 **目标项目** 里，不写进本包；Vank 不会因为技能运行过就自动建档：
 
 - `./vk/<skill-key>/`（例如 `vk-work` → `./vk/work/`）
 - 目标项目 `.gitignore` 忽略 `vk/`
+- 记录跨模块决策、风险、可复用方案、交接、阻塞和用户明确要求保留的内容；普通问答、状态确认、短暂阅读和已验证的小改动默认不记录。
+- roadmap、DSL、文章等用户直接要求的文件仍会照常生成，它们不是额外的执行记录。
 
 可选的长期项目上下文：`./vank/context|specs|decisions|status/`。见 [references/contract.md](references/contract.md)。
 

@@ -14,7 +14,7 @@ SHARED CONTRACT (MANDATORY)
 - Before execution, you MUST load `../shared/vk-core-contract.md`.
 - Result output MUST follow the shared result contract: start with the summary card, then structured sections and Auto-evolution.
 - The local record directory for this skill is `./vk/work/`.
-- Every substantial implementation task MUST leave a local execution record under `./vk/work/`.
+- Create a local execution record only when the shared selective-record policy warrants it. A routine, scoped change with clear verification can finish without an extra record.
 
 ================================================================================
 
@@ -494,14 +494,18 @@ current host. In that case, record the missing external gate and continue with
 the strongest repository-native verification that is available.
 
 --------------------------------
-Step 8: Task Summary & Local Record
+Step 8: Important-task Summary & Local Record
 --------------------------------
-- After task execution, produce a local task execution summary document.
-- The summary file name MUST be written in Chinese
+- Before creating a local task execution summary, apply the shared
+  selective-record policy. Create it for cross-module work, material risk,
+  multi-cycle delivery, handoff, blocker, or user-requested preservation.
+- For routine scoped work, report the summary in the final response and do not
+  create a local record.
+- When a record is warranted, the summary file name MUST be written in Chinese
   (e.g. task-summary-xxx.md).
-- The summary path MUST be under `./vk/work/`.
+- When a record is warranted, the summary path MUST be under `./vk/work/`.
 
-- The summary MUST include:
+- A warranted summary MUST include:
   - What was implemented
   - Why this approach was chosen
   - Key trade-offs or constraints
@@ -516,16 +520,18 @@ Purpose:
 - Preserve reasoning outside the code
 
 --------------------------------
-Step 9: Git Hygiene
+Step 9: Git Hygiene (WHEN A RECORD WAS CREATED)
 --------------------------------
-- Before ignore/staging cleanup, auto-migrate legacy local record directories:
+- Only when a record was created, auto-migrate legacy local record directories:
   - `VK_SKILLS_DIR="${VK_SKILLS_DIR:-$HOME/.codex/skills}" && python3 "$VK_SKILLS_DIR/vk-submit/scripts/migrate_vk_record_dirs.py" --repo-root .`
 - The summary file and path `./vk/work` is for LOCAL reference only.
-- Ensure `.gitignore` contains `vk/` and legacy compatibility rule `vk-*/` (automatic, not just a reminder):
+- Only when a record was created, ensure `.gitignore` contains `vk/`. Add the
+  legacy compatibility rule `vk-*/` only when the repository is not the Vank
+  package source (top-level `vk-*/SKILL.md` directories would be ignored):
   - `touch .gitignore`
   - `rg -n '^vk/$' .gitignore || printf '\nvk/\n' >> .gitignore`
   - `rg -n '^vk-\\*/$' .gitignore || printf 'vk-*/\n' >> .gitignore`
-- If local records under `vk/` were staged by mistake, remove them from staging:
+- If a local record was created and staged by mistake, remove it from staging:
   - `git restore --staged -- vk/ 'vk-*'`
 - Ensure no development notes or summaries pollute the repository.
 - Re-check git scope before finalizing:

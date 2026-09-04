@@ -1,8 +1,10 @@
 # VK Shared Contract
 
-## 1. Local Record Layout
+## 1. Selective Local Records
 
-- All `vk-*` skill documents, review notes, execution summaries, bad cases, and research notes go under `./vk/<skill-key>/`.
+- When a local record is warranted, `vk-*` skill documents, review notes,
+  execution summaries, bad cases, and research notes go under
+  `./vk/<skill-key>/`.
 - Naming stays split:
   - skill invoke name, directory name, and install shim name stay `vk-xxx`
   - records use `vk/xxx`
@@ -15,6 +17,21 @@
   - `bad-cases/`: failures, misjudgments, regressions
   - `research/`: web research and external practice notes
 - Treat records as local, untracked assets under the **target project's** `./vk/`. Do not write skill run records into the home directory, automation trees, or external volumes.
+- Do not create a record merely because a skill ran. Before writing one, apply
+  this policy:
+  - **Record:** the user asks to preserve or hand off the result; the task makes
+    a cross-module or architecture decision; it changes a data-flow, security,
+    release, or operational risk boundary; it produces a reusable plan, DSL,
+    roadmap, or review baseline; it finds a material defect, blocker, or bad
+    case; or it needs to resume across sessions.
+  - **Usually skip:** routine Q&A, status checks, short explanations, small
+    code reads, a trivial single-scope edit with passing verification, and
+    clean no-op checks.
+  - **Direct deliverables are different:** when the user asks for a roadmap,
+    DSL, article, report, or other file, create that requested deliverable even
+    if no additional execution record is warranted.
+- When no record is warranted, do not create an empty directory or placeholder
+  file. State `not created — routine result` in the final result instead.
 - If the target project still has legacy `vk-xxx/` record directories, migrate before writing:
 
 ```bash
@@ -38,7 +55,10 @@ done
 ## 2. Git Hygiene
 
 - Primary ignore rule: `vk/`
-- Also ignore legacy paths: `vk-*/`
+- In ordinary target projects, also ignore legacy paths: `vk-*/`.
+- Exception: do **not** add `vk-*/` in the Vank package source repository,
+  identified by top-level `vk-*/SKILL.md` directories. That pattern would
+  ignore the package's tracked child skills; use `vk/` there instead.
 - Do not keep per-skill ignore rules such as `vk-read/`. Keep old folders out of git.
 - If records were staged by mistake:
 
@@ -46,15 +66,16 @@ done
 git restore --staged -- vk/ 'vk-*'
 ```
 
-## 3. Auto Evolution Loop
+## 3. Selective Auto Evolution
 
-- After each skill run, check for:
+- After each substantive skill run, check for:
   - failure or a blocker
   - repeated questions of the same kind
   - format rework
   - user correction
   - foreseeable repetitive manual work
-- If any signal appears, do at least one of:
+- Act only when the signal is material enough to help a later task or avoid a
+  repeat failure. Then do at least one of:
   - write `./vk/<skill-key>/bad-cases/`
   - write `./vk/<skill-key>/research/`
   - emit a Codex automation suggestion for later review
@@ -114,7 +135,9 @@ git restore --staged -- vk/ 'vk-*'
 ```
 
 - `Skill:` is the invoke name, such as `vk-work`.
-- `Record:` is the artifact directory, such as `./vk/work/...`.
+- `Record:` is the artifact directory, such as `./vk/work/...`, or
+  `not created — routine result` when the selective record policy did not
+  warrant a file.
 
 - If the host supports directives, you may append:
   - `::automation-update{...}`

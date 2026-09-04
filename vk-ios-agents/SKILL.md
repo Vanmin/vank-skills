@@ -10,7 +10,7 @@ description: Orchestrate Codex-based iOS app development by coordinating multipl
 - Load `../shared/vk-core-contract.md` before acting.
 - Follow the shared result contract: start with a summary card, then structured body and Auto-evolution.
 - Local records go under `./vk/ios-agents/`.
-- After each orchestration, write plan, execution, gate results, and evolution notes to `./vk/ios-agents/`.
+- For a real multi-skill delivery or a material gate decision, write plan, execution, and gate results to `./vk/ios-agents/`. Do not create a record for a brief intake, routing decision, or routine status update.
 - `.gitignore` must include `vk/`.
 - If records were staged by mistake: `git restore --staged -- vk/ 'vk-*'`.
 
@@ -82,7 +82,7 @@ Do not move forward without passing each gate:
 ## Output Format
 
 For each coordinated task, output:
-1. Summary card titled `😁 + short task summary`, with status, scope, validation, local record
+1. Summary card titled `😁 + short task summary`, with status, scope, validation, and either the local record path or `not created — routine result`
 2. `Plan`: lanes, dependencies, and gate criteria
 3. `Execution`: what was done per lane and by which skill
 4. `Validation`: gate results with concrete evidence

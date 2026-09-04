@@ -104,10 +104,16 @@ run the whole suite, or duplicate Vank's backend constraints and local records.
 
 ## Records
 
-Skill run records belong in the **target project**, not in this package:
+Only important skill records belong in the **target project**, not in this
+package. Vank does not create a record merely because a skill ran:
 
 - `./vk/<skill-key>/` (for example `vk-work` → `./vk/work/`)
 - Ignore `vk/` in that project's `.gitignore`
+- Record material decisions, risks, reusable plans, handoffs, blockers, and
+  user-requested preservation. Skip routine Q&A, status checks, short reads,
+  and trivial verified edits.
+- Requested files such as a roadmap, DSL, or article are direct deliverables,
+  not extra execution records.
 
 Optional durable project context: `./vank/context|specs|decisions|status/`. See [references/contract.md](references/contract.md).
 

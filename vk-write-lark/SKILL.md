@@ -10,7 +10,7 @@ description: Sync a local article directory to Lark/Feishu from a natural-langua
 - Load `../shared/vk-core-contract.md` before acting.
 - Follow the shared result contract: start with a summary card, then structured body and Auto-evolution.
 - Local records go under `./vk/write-lark/`.
-- Write preflight results, asset maps, blockers, or apply records to `./vk/write-lark/`.
+- Write preflight results, asset maps, blockers, or apply records to `./vk/write-lark/` only when the result will be handed off, a cloud write occurs, a material blocker is found, or the shared selective-record policy warrants it.
 - `.gitignore` must include `vk/`.
 - If records were staged by mistake: `git restore --staged -- vk/ 'vk-*'`.
 
@@ -66,7 +66,7 @@ If write tools or destination are missing, stop at `manifest`.
 2. source scope
 3. target mode and destination
 4. blockers / risks / confirmations
-5. local record: `./vk/write-lark/...`
+5. local record, when warranted: `./vk/write-lark/...`; otherwise `not created — routine result`
 
 Final reply: summary card titled `😁 + short task summary`, then Execution summary, Key artifacts, Validation / evidence, Risks / next steps, Auto-evolution.
 

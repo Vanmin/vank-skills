@@ -107,21 +107,27 @@ def upsert_git_baseline(text: str, block: str) -> str:
     return text.rstrip() + "\n\n" + block + "\n"
 
 
-def ensure_gitignore(repo_root: Path) -> tuple[bool, bool]:
+def is_vank_skill_source(repo_root: Path) -> bool:
+    return any(repo_root.glob("vk-*/SKILL.md"))
+
+
+def ensure_gitignore(repo_root: Path) -> tuple[bool, bool, bool]:
     path = repo_root / ".gitignore"
     if not path.exists():
         path.write_text("", encoding="utf-8")
     text = path.read_text(encoding="utf-8")
     lines = text.splitlines()
     changed = False
-    for rule in ("vk/", "vk-*/"):
+    legacy_rule_applicable = not is_vank_skill_source(repo_root)
+    rules = ("vk/", "vk-*/") if legacy_rule_applicable else ("vk/",)
+    for rule in rules:
         if rule not in lines:
             lines.append(rule)
             changed = True
     if changed:
         path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
     final = path.read_text(encoding="utf-8").splitlines()
-    return ("vk/" in final, "vk-*/" in final)
+    return ("vk/" in final, ("vk-*/" in final or not legacy_rule_applicable), legacy_rule_applicable)
 
 
 def main() -> int:
@@ -149,7 +155,7 @@ def main() -> int:
 
     run(["python3", str(SCOPE_WRITER), "--repo-root", str(repo_root), "--record-file", str(record_file)], repo_root)
 
-    vk_ok, legacy_ok = ensure_gitignore(repo_root)
+    vk_ok, legacy_ok, legacy_rule_applicable = ensure_gitignore(repo_root)
 
     text = record_file.read_text(encoding="utf-8")
     text = replace_line(text, "- Project path:", str(repo_root))
@@ -157,7 +163,10 @@ def main() -> int:
     text = replace_line(text, "- Record file path:", rel_to_repo(record_file, repo_root))
     text = replace_line(text, "- Dry-run manifest path:", "")
     text = replace_line(text, "- `.gitignore` includes `vk/`:", "yes" if vk_ok else "no")
-    text = replace_line(text, "- `.gitignore` includes `vk-*/`:", "yes" if legacy_ok else "no")
+    legacy_value = "yes" if legacy_ok else "no"
+    if not legacy_rule_applicable:
+        legacy_value = "not applicable — Vank package source"
+    text = replace_line(text, "- `.gitignore` includes `vk-*/`:", legacy_value)
     text = replace_line(text, "- Before: `git status --short --branch` summary:", "see Git Baseline Snapshot below")
     text = upsert_git_baseline(text, render_git_baseline(repo_root))
     record_file.write_text(text, encoding="utf-8")

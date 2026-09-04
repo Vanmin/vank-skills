@@ -10,7 +10,7 @@ description: Gate and repair flowchart assets in a writing-project article direc
 - Load `../shared/vk-core-contract.md` before acting.
 - Follow the shared result contract: start with a summary card, then structured body and Auto-evolution.
 - Local records go under `./vk/diagram-guard/`.
-- After each run, besides `assets/diagrams/diagram_guard_report.json`, write a local summary or evolution note under `./vk/diagram-guard/`.
+- `assets/diagrams/diagram_guard_report.json` remains the required gate output. Write a separate local summary or evolution note only for a material repair, blocker, or reusable bad case.
 - `.gitignore` must include `vk/`.
 - If records were staged by mistake: `git restore --staged -- vk/ 'vk-*'`.
 
@@ -90,7 +90,7 @@ Report:
 2. `after` issue count
 3. `passed=true/false`
 4. report path: `assets/diagrams/diagram_guard_report.json`
-5. local record: `./vk/diagram-guard/...`
+5. local record, when warranted: `./vk/diagram-guard/...`; otherwise `not created — routine result`
 
 Final reply: summary card titled `😁 + short task summary`, then Execution summary, Key artifacts, Validation / evidence, Risks / next steps, Auto-evolution.
 

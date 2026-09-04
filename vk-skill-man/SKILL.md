@@ -10,8 +10,10 @@ description: "Deterministic daily maintenance for local skill ecosystems: clean 
 - Execute only after loading `../shared/vk-core-contract.md`.
 - Result output MUST follow the shared result contract: start with the summary card, then structured sections and Auto-evolution.
 - The local record directory for this skill is `./vk/skill-man/`.
-- Every maintenance cycle MUST leave its execution record, bad cases, and research notes under `./vk/skill-man/`.
-- `.gitignore` main rule MUST be `vk/`, and the repo SHOULD keep compatibility rule `vk-*/`.
+- Write an execution record, bad case, or research note when maintenance changes the suite, finds a defect, records a reusable lesson, or needs follow-up. Do not create a persistent log for a clean no-op check.
+- `.gitignore` main rule MUST be `vk/`. Ordinary target projects SHOULD also
+  keep `vk-*/`; the Vank package source must not, because it contains tracked
+  `vk-*` child skill directories.
 - If local records were staged by mistake, run `git restore --staged -- vk/ 'vk-*'`.
 
 Execute a conservative, deterministic maintenance cycle for local skills.
@@ -133,16 +135,22 @@ Apply enhancement only when benefit is clear and recurring.
 If none is justified, output exactly:
 - `No structural enhancement required.`
 
-### Step 4: Write Execution Log
+### Step 4: Write Execution Log (WHEN RECORD-WORTHY)
 
-Write a deterministic log file in the target project's local record directory:
+Write a deterministic log file only when the maintenance cycle changed the
+suite, found a defect, produced a reusable lesson, or needs follow-up. For a
+clean no-op check, report `not created — routine result` and do not create a
+directory or file.
+
+When record-worthy, use the target project's local record directory:
 - `./vk/skill-man/`
 
 Default filename:
 - `skill-maintenance-YYYY-MM-DD.md`
 
 If file already exists for the day, append a new run section instead of overwriting.
-Always report the actual absolute path used. Do not write maintenance records outside the target project.
+When a log is written, report the actual absolute path used. Do not write
+maintenance records outside the target project.
 
 Log template:
 
@@ -176,7 +184,7 @@ When invoked, always return:
 3. `Step 1 Result`
 4. `Step 2 Result`
 5. `Step 3 Result`
-6. `Log File Written`
+6. `Log Result`
 7. `Risk Notes` (only if action risk exists)
 8. Auto-evolution
 

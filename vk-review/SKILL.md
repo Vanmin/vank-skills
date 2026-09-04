@@ -16,7 +16,7 @@ SHARED CONTRACT (MANDATORY)
 - Before execution, you MUST load `../shared/vk-core-contract.md`.
 - Final output MUST follow the shared result contract: Summary card -> Execution summary -> Key artifacts -> Validation / evidence -> Risks / next steps -> Auto-evolution.
 - The local record directory for this skill is `./vk/review/`.
-- Review artifacts, notes, and bad cases MUST be written under `./vk/review/` when the task is substantial.
+- Write review artifacts, notes, and bad cases under `./vk/review/` only when findings are material, the review is a reusable baseline, the user requests a record, or the shared selective-record policy otherwise warrants it.
 - If local records were staged by mistake, run `git restore --staged -- vk/ 'vk-*'`.
 
 ================================================================================

@@ -16,7 +16,7 @@ SHARED CONTRACT (MANDATORY)
 - Before execution, you MUST load `../shared/vk-core-contract.md`.
 - Final output MUST follow the shared result contract: Summary card -> Execution summary -> Key artifacts -> Validation / evidence -> Risks / next steps -> Auto-evolution.
 - The local record directory for this skill is `./vk/submit/`.
-- Every substantial submit or dry-run flow MUST leave a local record under `./vk/submit/`.
+- Create a local submit record for an actual submission, a material scope or safety issue, an explicit handoff, or when the shared selective-record policy warrants it. A clean no-commit rehearsal does not need a persistent record.
 
 ================================================================================
 
@@ -35,31 +35,36 @@ REQUIRED FLOW
 
 ================================================================================
 
-1. Run local record migration first when needed:
+1. Decide whether the submit is record-worthy under the shared policy. Actual
+   submission, a material safety finding, an explicit handoff, or a
+   user-requested audit trail is record-worthy; a clean no-commit rehearsal is
+   not.
+
+2. Only when record-worthy, run local record migration first:
 
 ```bash
 python3 scripts/migrate_vk_record_dirs.py --repo-root .
 ```
 
-2. Prepare or refresh a submit record:
+3. Only when record-worthy, prepare or refresh a submit record:
 
 ```bash
 python3 scripts/prepare_submit_record.py --repo-root .
 ```
 
-3. For a no-commit rehearsal, prefer:
+4. For a no-commit rehearsal that needs a written report, prefer:
 
 ```bash
 python3 scripts/prepare_submit_dry_run.py --repo-root .
 ```
 
-4. Before any real submit action, enforce scope validation with:
+5. Before any real submit action, enforce scope validation with:
 
 ```bash
 python3 scripts/check_vkpush_scope.py --repo-root .
 ```
 
-5. If the submit should really proceed, prefer the fixed absolute-path tool created by quick start:
+6. If the submit should really proceed, prefer the fixed absolute-path tool created by quick start:
 
 ```bash
 $HOME/.local/bin/vkpush fix "your commit message"
@@ -67,11 +72,11 @@ $HOME/.local/bin/vkpush fix "your commit message"
 
 If `scripts/quick_start.sh` has already completed, this absolute path will be fixed to the synced skill tool. After namespace initialization, both the binary name and absolute path suffix will be renamed together with the chosen prefix.
 
-6. Block the flow when:
+7. Block the flow when:
    - there is no staged change
    - unrelated dirty files exist outside `vk/`, `vk-*`, and `.gitignore`
    - commit intent is unclear
-7. If the submit proceeds, record:
+8. If the submit proceeds, record:
    - commit grouping decision
    - pre/post git status summary
    - scope-check output
@@ -83,8 +88,10 @@ GIT HYGIENE
 
 ================================================================================
 
-- Ensure `.gitignore` contains both `vk/` and `vk-*/`.
-- If local record files are staged, remove them from staging:
+- When a local record was created, ensure `.gitignore` contains `vk/`. Add
+  `vk-*/` only when the repository is not the Vank package source, where that
+  pattern would ignore tracked child skills.
+- When local record files were created and staged, remove them from staging:
 
 ```bash
 git restore --staged -- vk/ 'vk-*'
@@ -99,5 +106,5 @@ AUTO EVOLUTION
 
 ================================================================================
 
-- When submit safety fails because of missing helpers, missing records, or scope ambiguity, record a bad case under `./vk/submit/bad-cases/`.
+- When submit safety finds a material issue caused by missing helpers, missing records, or scope ambiguity, record a bad case under `./vk/submit/bad-cases/`.
 - If repeated failures come from missing preflight checks, strengthen the scripts instead of relying on reminders.

@@ -17,8 +17,8 @@ skill in full. Do not substitute the routing table for a child `SKILL.md`.
    (`$vk-work`, `/vk-request`, …), read that child `SKILL.md` and stop routing.
 2. Read [routing](references/routing.md) and pick the smallest matching child.
 3. Read [shared/vk-core-contract.md](shared/vk-core-contract.md), then read the
-   chosen child `SKILL.md`. Execute that skill as written, including its
-   record directory under `./vk/<skill-key>/`. For non-trivial implementation,
+   chosen child `SKILL.md`. Apply the shared selective-record policy before
+   creating anything under `./vk/<skill-key>/`. For non-trivial implementation,
    `vk-work` also applies the optional [gstack bridge](references/gstack-bridge.md).
 4. Load extra children only when the chosen skill says so (for example
    `vk-work` loading `vk-restrict`).
@@ -51,6 +51,8 @@ Optional project-level context (not a substitute for `./vk/` records):
 
 - Do not flatten children into 13 separately maintained packages.
 - Do not run every child. Skip phases the user already finished.
+- Do not create local records for routine results; follow the shared selective
+  record policy instead.
 - Do not copy or fork gstack. When its installed specialist skills are useful,
   invoke them through the bridge and keep Vank as the project-record owner.
 - Do not commit, push, deploy, or write to cloud docs unless the child skill

@@ -1,6 +1,6 @@
 ---
 name: vk-read
-description: Systematic codebase reading and understanding with structured local documentation output
+description: Systematic codebase reading and understanding; produces a local reading record only when the result is important for reuse or handoff.
 ---
 
 You are a read-only assistant specialized in understanding existing software projects.
@@ -14,7 +14,7 @@ SHARED CONTRACT (MANDATORY)
 - Before execution, you MUST load `../shared/vk-core-contract.md`.
 - Result output MUST follow the shared result contract: start with the summary card, then structured sections and Auto-evolution.
 - The local record directory for this skill is `./vk/read/`.
-- Every substantial reading task MUST leave a local reading record under `./vk/read/`.
+- Create a local reading record only when the shared selective-record policy warrants it; do not record a short trace or routine explanation.
 
 ================================================================================
 
@@ -124,17 +124,19 @@ Step 7: Configuration & Extension Points
 - Identify extension or plugin mechanisms if present.
 
 --------------------------------
-Step 8: Reading Summary & Local Documentation (MANDATORY)
+Step 8: Important Reading Summary & Local Documentation
 --------------------------------
-- Produce a structured reading summary document for local reference.
-- The document MUST be saved at the following path:
+- Apply the shared selective-record policy before creating a reading document.
+  Create one only when the repository map, architectural conclusion, or
+  unresolved ambiguity will be reused or handed off.
+- When a document is warranted, save it at the following path:
 
   ./vk/read/READ_SUMMARY_xxx.md
 
-- The file name suffix `xxx` MUST be written in Chinese
+- When a document is warranted, the file name suffix `xxx` MUST be written in Chinese
   (e.g. project / module / date).
 
-- The summary document MUST include:
+- A warranted summary document MUST include:
   - Project purpose and problem domain
   - High-level architecture overview
   - Core modules and their responsibilities
@@ -142,17 +144,18 @@ Step 8: Reading Summary & Local Documentation (MANDATORY)
   - Important design decisions and assumptions
   - Known unclear or ambiguous parts
 
-Purpose:
-- Enable fast future recall of the project
-- Externalize understanding beyond the current session
+For a routine code trace or short explanation, give the evidence inline and do
+not create a local document.
 
 --------------------------------
-Step 9: Git Hygiene (MANDATORY)
+Step 9: Git Hygiene (WHEN A RECORD WAS CREATED)
 --------------------------------
-- Before ignore/staging cleanup, auto-migrate legacy local record directories:
+- Only when a record was created, auto-migrate legacy local record directories:
   - `VK_SKILLS_DIR="${VK_SKILLS_DIR:-$HOME/.codex/skills}" && python3 "$VK_SKILLS_DIR/vk-submit/scripts/migrate_vk_record_dirs.py" --repo-root .`
 - The entire `vk/read/` directory is for LOCAL reference only.
-- Ensure `.gitignore` contains `vk/` and legacy compatibility rule `vk-*/` (automatic, not just a reminder):
+- Only when a record was created, ensure `.gitignore` contains `vk/`. Add the
+  legacy compatibility rule `vk-*/` only when the repository is not the Vank
+  package source (top-level `vk-*/SKILL.md` directories would be ignored):
   - `touch .gitignore`
   - `rg -n '^vk/$' .gitignore || printf '\nvk/\n' >> .gitignore`
   - `rg -n '^vk-\\*/$' .gitignore || printf 'vk-*/\n' >> .gitignore`
