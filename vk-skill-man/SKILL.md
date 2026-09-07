@@ -14,7 +14,7 @@ description: "Deterministic daily maintenance for local skill ecosystems: clean 
 - `.gitignore` main rule MUST be `vk/`. Ordinary target projects SHOULD also
   keep `vk-*/`; the Vank package source must not, because it contains tracked
   `vk-*` child skill directories.
-- If local records were staged by mistake, run `git restore --staged -- vk/ 'vk-*'`.
+- If local records were staged by mistake, run `git restore --staged -- vk/`.
 
 Execute a conservative, deterministic maintenance cycle for local skills.
 Prioritize stability, backward compatibility, and entropy reduction.

@@ -12,7 +12,7 @@ description: Read the architecture of a directory, analyze module duties and fea
 - Local records go under `./vk/roadmap/` in the target project.
 - After generating a roadmap, write the document under that project's `./vk/roadmap/`.
 - If a global `AGENTS.md` exists, try to sync a short summary into the managed block.
-- `.gitignore` must include `vk/`. If records were staged by mistake: `git restore --staged -- vk/ 'vk-*'`.
+- `.gitignore` must include `vk/`. If records were staged by mistake: `git restore --staged -- vk/`.
 
 ## Inputs
 
@@ -84,7 +84,7 @@ If a global `AGENTS.md` exists, write a short summary into:
 - Create `./vk/roadmap/` under the target.
 - Filename `roadmap-YYYYMMDD-HHMMSS.md`.
 - Before write: migrate legacy `vk-*` record dirs per the shared contract; `.gitignore` covers `vk/` and `vk-*/`.
-- If `vk/` was staged: `git restore --staged -- vk/ 'vk-*'`.
+- If `vk/` was staged: `git restore --staged -- vk/`.
 
 ### Step 6: Global AGENTS sync
 

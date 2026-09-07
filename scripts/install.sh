@@ -16,12 +16,25 @@ WITH_SHIMS="false"
 BACKUP_ROOT=""
 LINK_COUNT=0
 REMOVED_COUNT=0
+SKILL_NAMES=()
 
-SKILL_NAMES=(
-  vk-question vk-read vk-roadmap vk-request vk-restrict
-  vk-work vk-review vk-submit vk-writer vk-ios-agents
-  vk-diagram-guard vk-write-lark vk-skill-man
-)
+discover_skill_names() {
+  local skill_md name
+  local names=()
+  shopt -s nullglob
+  for skill_md in "$ROOT_DIR"/vk-*/SKILL.md; do
+    name="$(basename "$(dirname "$skill_md")")"
+    names+=("$name")
+  done
+  shopt -u nullglob
+  if [[ ${#names[@]} -eq 0 ]]; then
+    echo "no child skills found under $ROOT_DIR/vk-*/SKILL.md" >&2
+    exit 1
+  fi
+  while IFS= read -r name; do
+    SKILL_NAMES+=("$name")
+  done < <(printf '%s\n' "${names[@]}" | sort)
+}
 
 usage() {
   cat <<'EOF'
@@ -35,7 +48,9 @@ Default:
   - chmod +x vk-submit/scripts/vkpush and pin it to ~/.local/bin/vkpush when present
 
 --with-shims:
-  Also plant vk-* directory links at the host skill root for hosts that do not recurse.
+  Also plant vk-* directory links at the host skill root.
+  Use this when $vk-work is missing after a default install (host does not
+  recurse into nested SKILL.md files).
 
 Optional env:
   CODEX_SKILLS_DIR CLAUDE_SKILLS_DIR CURSOR_SKILLS_DIR AGENTS_SKILLS_DIR LOCAL_BIN_DIR
@@ -160,11 +175,13 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+discover_skill_names
 assert_layout
 
 echo "repo=$ROOT_DIR"
 echo "dry_run=$DRY_RUN"
 echo "with_shims=$WITH_SHIMS"
+echo "children=${#SKILL_NAMES[@]}"
 
 maybe_link_bundle "$CODEX_DIR"
 maybe_link_bundle "$CLAUDE_DIR"
@@ -201,4 +218,7 @@ if [[ -n "$BACKUP_ROOT" ]]; then
   echo "backup=$BACKUP_ROOT"
 fi
 echo "bundle=$CODEX_DIR/vank"
+if [[ "$WITH_SHIMS" != "true" ]]; then
+  echo "hint: if \$vk-work is missing in a new session, re-run with --with-shims"
+fi
 echo "[OK] vank installed as one package."

@@ -42,7 +42,8 @@ Dry run:
 bash scripts/install.sh --dry-run
 ```
 
-If a host does not recurse into nested `SKILL.md` files:
+If a host does not recurse into nested `SKILL.md` files, `$vk-work` will be
+missing and only `$vank` may show up. Re-run:
 
 ```bash
 bash scripts/install.sh --with-shims
@@ -78,11 +79,11 @@ Specialists (`vk-writer`, `vk-ios-agents`, `vk-diagram-guard`, `vk-write-lark`) 
 
 ### Optional gstack delivery gates
 
-For non-trivial implementation, `vk-work` remains the controller and reads the
-[Vank–gstack delivery bridge](references/gstack-bridge.md). It calls an
-installed gstack specialist only when the task needs browser QA, performance
-evidence, security review, or an authorized release. It does not copy gstack,
-run the whole suite, or duplicate Vank's backend constraints and local records.
+`vk-work` remains the controller. After local verification it may read the
+[Vank–gstack delivery bridge](references/gstack-bridge.md) only when a
+specialist actually matches: browser QA for web UI, extra security review
+when requested, or an authorized release. Backend capacity tests stay in
+Vank. Ordinary commits stay in `vk-submit`. gstack `qa` must not commit.
 
 ### Children
 
@@ -108,6 +109,7 @@ Only important skill records belong in the **target project**, not in this
 package. Vank does not create a record merely because a skill ran:
 
 - `./vk/<skill-key>/` (for example `vk-work` → `./vk/work/`)
+- Long-running resume: one `./vk/work/checkpoint.md`, updated in place
 - Ignore `vk/` in that project's `.gitignore`
 - Record material decisions, risks, reusable plans, handoffs, blockers, and
   user-requested preservation. Skip routine Q&A, status checks, short reads,
@@ -115,7 +117,8 @@ package. Vank does not create a record merely because a skill ran:
 - Requested files such as a roadmap, DSL, or article are direct deliverables,
   not extra execution records.
 
-Optional durable project context: `./vank/context|specs|decisions|status/`. See [references/contract.md](references/contract.md).
+Optional committed product context: `./vank/context|specs|decisions/`.
+Do not duplicate live status there. See [references/contract.md](references/contract.md).
 
 ## Package maintenance
 

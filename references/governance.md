@@ -10,7 +10,7 @@ vank/
   SKILL.md                 # router only
   shared/                  # vk-core-contract
   vk-question/ …           # full child skills
-  scripts/install.sh       # one bundle link + vk-* shims
+  scripts/install.sh       # scans vk-*/SKILL.md, one bundle link
 ```
 
 Children stay in this tree. Do not split them back into 13 installable
@@ -30,8 +30,8 @@ That command:
    `~/.cursor/skills/vank`. Nested `vk-*` skills live inside that one
    directory, same as gstack.
 2. Removes leftover host-root `vk-*` links that pointed at this repo or
-   the old `legacy flat package` tree. Pass `--with-shims` only if a host cannot
-   discover nested `SKILL.md` files.
+   the old `legacy flat package` tree. Pass `--with-shims` if `$vk-work` is
+   missing because the host does not recurse into nested `SKILL.md` files.
 3. Pins `vkpush` to `~/.local/bin/vkpush` when `vk-submit/scripts/vkpush`
    exists.
 

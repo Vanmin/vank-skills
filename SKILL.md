@@ -18,8 +18,9 @@ skill in full. Do not substitute the routing table for a child `SKILL.md`.
 2. Read [routing](references/routing.md) and pick the smallest matching child.
 3. Read [shared/vk-core-contract.md](shared/vk-core-contract.md), then read the
    chosen child `SKILL.md`. Apply the shared selective-record policy before
-   creating anything under `./vk/<skill-key>/`. For non-trivial implementation,
-   `vk-work` also applies the optional [gstack bridge](references/gstack-bridge.md).
+   creating anything under `./vk/<skill-key>/`. Do not load the
+   [gstack bridge](references/gstack-bridge.md) at routing time; `vk-work`
+   loads it only after local verification when an entry criterion matches.
 4. Load extra children only when the chosen skill says so (for example
    `vk-work` loading `vk-restrict`).
 5. Report the selected skill, skipped children, and the child skill's own

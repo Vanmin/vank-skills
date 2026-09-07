@@ -8,7 +8,7 @@ improvise from this table.
 
 | User intent | Load | Typical output |
 | --- | --- | --- |
-| Explain a concept, clarify a decision, Chinese Q&A | `vk-question/SKILL.md` | Structured answer + optional `./vk/question/` note |
+| Explain a concept, clarify a decision, trade-off Q&A | `vk-question/SKILL.md` | Structured answer + optional `./vk/question/` note |
 | Trace a code path without editing | `vk-read/SKILL.md` | Evidence-backed reading record |
 | Map a repo or subdirectory | `vk-roadmap/SKILL.md` | `./vk/roadmap/` document |
 | Turn intent into an executable DSL / spec | `vk-request/SKILL.md` | DSL under `./vk/request/` |
@@ -39,11 +39,11 @@ Specialists (`vk-writer`, `vk-ios-agents`, `vk-diagram-guard`,
 
 ## gstack bridge for implementation
 
-For non-trivial implementation, `vk-work` owns the lifecycle and reads
-[gstack bridge](gstack-bridge.md). It selects an installed gstack specialist
-only when the task needs browser QA, performance evidence, security review,
-or an authorized release. It does not run gstack wholesale and it does not
-duplicate Vank's backend gate, review record, or submission safety checks.
+For non-trivial implementation, `vk-work` owns the lifecycle. After local
+verification, it may read [gstack bridge](gstack-bridge.md) only when a
+bridge entry criterion matches. It does not run gstack wholesale, does not
+use gstack `benchmark` as backend capacity evidence, and does not let gstack
+`qa` commit.
 
 ## Compatibility
 
@@ -56,3 +56,5 @@ duplicate Vank's backend gate, review record, or submission safety checks.
   `bash scripts/install.sh --with-shims`.
 - `$vk-work` and `$vank` are both valid. `$vank` only routes; `$vk-work`
   executes.
+- If `$vk-work` is missing after install, the host likely does not recurse
+  into nested `SKILL.md` files. Re-run `bash scripts/install.sh --with-shims`.

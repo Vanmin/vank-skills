@@ -12,7 +12,7 @@ description: Sync a local article directory to Lark/Feishu from a natural-langua
 - Local records go under `./vk/write-lark/`.
 - Write preflight results, asset maps, blockers, or apply records to `./vk/write-lark/` only when the result will be handed off, a cloud write occurs, a material blocker is found, or the shared selective-record policy warrants it.
 - `.gitignore` must include `vk/`.
-- If records were staged by mistake: `git restore --staged -- vk/ 'vk-*'`.
+- If records were staged by mistake: `git restore --staged -- vk/`.
 
 ## Overview
 

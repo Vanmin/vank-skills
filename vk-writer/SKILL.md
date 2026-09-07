@@ -17,7 +17,7 @@ SHARED CONTRACT (MANDATORY)
 - Result output MUST follow the shared result contract: start with the summary card, then structured sections and Auto-evolution.
 - The local record directory for this skill is `./vk/writer/`.
 - Requested article files are direct deliverables. Create separate notes, bad cases, or research records under `./vk/writer/` only when they are reusable or required for later handoff.
-- If local records were staged by mistake, run `git restore --staged -- vk/ 'vk-*'`.
+- If local records were staged by mistake, run `git restore --staged -- vk/`.
 
 ================================================================================
 

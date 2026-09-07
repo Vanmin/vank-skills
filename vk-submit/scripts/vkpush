@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Bundled Git commit/push helper for this skill repository.
+# Commit and push already-staged changes only.
+# Never runs `git add .`. Prints success only after a successful push.
 
 set -euo pipefail
 
@@ -10,15 +11,33 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 SCRIPT_PATH="${BASH_SOURCE[0]}"
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
 COMMAND_NAME="$(basename "$SCRIPT_PATH")"
 LOGFILE="$HOME/.${COMMAND_NAME}.log"
+CHECKER="$SCRIPT_DIR/check_vkpush_scope.py"
+
+fail() {
+  echo -e "${RED}Failed: $1${NC}" >&2
+  if [[ $# -gt 1 ]]; then
+    echo "command: $2" >&2
+  fi
+  exit 1
+}
+
+run_checked() {
+  local desc="$1"
+  shift
+  if ! "$@"; then
+    fail "$desc" "$*"
+  fi
+}
 
 show_help() {
-  local active_script
-  active_script="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)/$COMMAND_NAME"
-
   echo -e "${YELLOW}Usage:${NC}"
   echo "  $COMMAND_NAME <type> <message>"
+  echo ""
+  echo "Commits and pushes currently staged files only."
+  echo "Stage the intended files first. This tool does not run git add."
   echo ""
   echo -e "${YELLOW}Types:${NC}"
   echo "  fix        bug fix"
@@ -27,8 +46,7 @@ show_help() {
   echo "  refactor   refactor"
   echo ""
   echo -e "${YELLOW}Examples:${NC}"
-  echo "  $COMMAND_NAME fix 'fix timezone issue'"
-  echo "  $COMMAND_NAME feat 'add login feature'"
+  echo "  git add path/to/file && $COMMAND_NAME fix 'fix timezone issue'"
   echo ""
   echo -e "${YELLOW}Other commands:${NC}"
   echo "  $COMMAND_NAME log      show last 10 commits"
@@ -36,7 +54,7 @@ show_help() {
   echo "  $COMMAND_NAME help     show help"
   echo ""
   echo -e "${YELLOW}Notice:${NC}"
-  echo "  Current script: $active_script"
+  echo "  Current script: $SCRIPT_DIR/$COMMAND_NAME"
   echo "  History log: $LOGFILE"
 }
 
@@ -199,10 +217,23 @@ case "$TYPE" in
     ;;
 esac
 
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  fail "not inside a Git repository"
+fi
+
 BRANCH="$(git branch --show-current 2>/dev/null || true)"
 if [[ -z "$BRANCH" ]]; then
-  echo -e "${RED}Not inside a Git repository.${NC}"
-  exit 1
+  fail "detached HEAD; checkout a branch before push"
+fi
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+if git diff --cached --quiet; then
+  fail "no staged changes; stage the intended files first (this tool does not run git add)"
+fi
+
+if [[ -f "$CHECKER" ]]; then
+  python3 "$CHECKER" --repo-root "$REPO_ROOT" || fail "scope check rejected the worktree"
 fi
 
 MESSAGE="[$TYPE]: $2"
@@ -211,9 +242,11 @@ echo -e "${GREEN}========================================${NC}"
 echo -e "${YELLOW}Current branch:${NC} $BRANCH"
 echo -e "${YELLOW}Type:${NC} $TYPE"
 echo -e "${YELLOW}Message:${NC} $MESSAGE"
+echo -e "${YELLOW}Staged only:${NC} yes"
 echo -e "${GREEN}========================================${NC}"
 
-git add . && git commit -m "$MESSAGE" && git push origin "$BRANCH"
+run_checked "git commit" git commit -m "$MESSAGE"
+run_checked "git push origin $BRANCH" git push origin "$BRANCH"
 
 echo -e "${GREEN}Push succeeded.${NC}"
 echo "$(date '+%Y-%m-%d %H:%M:%S') | $TYPE | $MESSAGE | branch:$BRANCH" >> "$LOGFILE"

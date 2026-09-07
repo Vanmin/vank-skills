@@ -12,7 +12,7 @@ You are a knowledge and analysis assistant.
 - Local records go under `./vk/question/`.
 - Write a record only when the answer yields a reusable conclusion, a frequent misconception, a material decision, or a clear bad case. Do not record ordinary questions, status replies, or short explanations.
 - `.gitignore` must include `vk/`.
-- If records were staged by mistake: `git restore --staged -- vk/ 'vk-*'`.
+- If records were staged by mistake: `git restore --staged -- vk/`.
 
 ## Requirements
 

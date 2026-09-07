@@ -11,13 +11,13 @@ description: Gate backend design and review across data flow, IO, and component 
 - Follow the shared result contract: start with a summary card, then structured body and Auto-evolution.
 - Local records go under `./vk/restrict/`.
 - Write reusable constraint lists, risk gates, bad cases, or review baselines to `./vk/restrict/`.
-- If records were staged by mistake: `git restore --staged -- vk/ 'vk-*'`.
+- If records were staged by mistake: `git restore --staged -- vk/`.
 
 ## Purpose
 
 - Compress "what a backend design must respect" into executable, reviewable constraints.
 - Always reason on three axes: data flow, IO, component dependencies.
-- Prefer defects that cause latency, instability, compatibility breaks, or incident amplification.
+- Prefer defects that cause wrong money/state, lost updates, cross-tenant leaks, duplicate side effects, compatibility breaks, then latency and amplification.
 - Default hosts: `vk-request`, `vk-work`, `vk-review`. Also valid when invoked alone.
 
 ## When to load
@@ -34,7 +34,8 @@ description: Gate backend design and review across data flow, IO, and component 
 
 - Read this file first and decide whether the task is actually a backend-constraint problem.
 - Load [references/backend-scheme-guardrails.md](references/backend-scheme-guardrails.md) only when detailed rules are needed.
-- Do not restating the host skill's execution loop. This skill is a constraint and gate layer.
+- State constraints as Applies / Risk / Allowed exception / Evidence. Do not emit blanket bans.
+- Do not restate the host skill's execution loop. This skill is a constraint and gate layer.
 
 ## Three-axis frame (required)
 
@@ -47,7 +48,7 @@ description: Gate backend design and review across data flow, IO, and component 
 ### 2. IO
 
 - List DB / Redis / RPC / MQ / cron IO on the main chain.
-- Check: IO in loops, batching, unbounded scans, index/cursor/limit/batch caps, sync vs async vs bulk writes, retry/timeout/idempotency closure.
+- Check: whether loop IO is N+1 or a bounded page/backfill; batching; scans; sync vs async durability; retry/timeout/idempotency. Defaults live in the guardrails with explicit exceptions.
 
 ### 3. Dependencies
 

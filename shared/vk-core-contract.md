@@ -63,7 +63,7 @@ done
 - If records were staged by mistake:
 
 ```bash
-git restore --staged -- vk/ 'vk-*'
+git restore --staged -- vk/
 ```
 
 ## 3. Selective Auto Evolution
@@ -113,6 +113,10 @@ git restore --staged -- vk/ 'vk-*'
   - short `>` lines
   - 4 to 6 metadata rows
   - no long sentences inside the card
+- **Routine** answers (short Q&A, trivial verified edits): summary card, what
+  changed or the answer, and verification when code changed. Skip empty
+  Auto-evolution and empty artifact sections.
+- **Material** answers: full six-section contract.
 - Do not use rich HTML cards, wide tables, or ASCII tables unless the host renders them reliably and the user asked.
 - Put overflow detail in `Execution summary` or `Key artifacts`.
 - Do not title the card "Result card".

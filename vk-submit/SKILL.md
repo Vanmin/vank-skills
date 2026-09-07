@@ -24,10 +24,11 @@ MISSION
 
 ================================================================================
 
-- Never assume the bundled `vkpush` tool only submits staged changes.
+- `vkpush` commits **staged files only**. It never runs `git add .`.
 - Review before push when there is any uncertainty.
 - Make scope, evidence, and rollback path explicit.
 - Keep local records out of Git tracking.
+- Vank owns ordinary commit/push. Do not hand submission to gstack `qa` or `ship` unless the user explicitly authorized a gstack release flow.
 
 ================================================================================
 
@@ -40,42 +41,51 @@ REQUIRED FLOW
    user-requested audit trail is record-worthy; a clean no-commit rehearsal is
    not.
 
-2. Only when record-worthy, run local record migration first:
+2. Only when record-worthy, run local record migration first. Resolve the
+   script from this skill directory, not from a flattened host path:
 
 ```bash
-python3 scripts/migrate_vk_record_dirs.py --repo-root .
+python3 vk-submit/scripts/migrate_vk_record_dirs.py --repo-root .
 ```
+
+If this package is installed as `.../skills/vank`, the same file is
+`.../skills/vank/vk-submit/scripts/migrate_vk_record_dirs.py`.
 
 3. Only when record-worthy, prepare or refresh a submit record:
 
 ```bash
-python3 scripts/prepare_submit_record.py --repo-root .
+python3 vk-submit/scripts/prepare_submit_record.py --repo-root .
 ```
 
 4. For a no-commit rehearsal that needs a written report, prefer:
 
 ```bash
-python3 scripts/prepare_submit_dry_run.py --repo-root .
+python3 vk-submit/scripts/prepare_submit_dry_run.py --repo-root .
 ```
 
-5. Before any real submit action, enforce scope validation with:
+5. Stage the intended files yourself. Then enforce scope validation:
 
 ```bash
-python3 scripts/check_vkpush_scope.py --repo-root .
+python3 vk-submit/scripts/check_vkpush_scope.py --repo-root .
 ```
 
-6. If the submit should really proceed, prefer the fixed absolute-path tool created by quick start:
+The checker allows unstaged files only under `vk/` and `.gitignore`.
+Unstaged `vk-*` skill or product directories are out of scope.
+
+6. If the submit should proceed, use the pinned helper (created by install):
 
 ```bash
 $HOME/.local/bin/vkpush fix "your commit message"
 ```
 
-If `scripts/quick_start.sh` has already completed, this absolute path will be fixed to the synced skill tool. After namespace initialization, both the binary name and absolute path suffix will be renamed together with the chosen prefix.
+Fallback: `vk-submit/scripts/vkpush` from this package. Both tools refuse to
+run `git add` and print success only after `git push` returns 0.
 
 7. Block the flow when:
    - there is no staged change
-   - unrelated dirty files exist outside `vk/`, `vk-*`, and `.gitignore`
+   - unrelated dirty files exist outside `vk/` and `.gitignore`
    - commit intent is unclear
+   - author/committer identity does not match the intended GitHub account
 8. If the submit proceeds, record:
    - commit grouping decision
    - pre/post git status summary
@@ -94,7 +104,7 @@ GIT HYGIENE
 - When local record files were created and staged, remove them from staging:
 
 ```bash
-git restore --staged -- vk/ 'vk-*'
+git restore --staged -- vk/
 ```
 
 - Do not silently include unrelated changes.

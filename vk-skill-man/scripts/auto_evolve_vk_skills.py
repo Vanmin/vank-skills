@@ -159,11 +159,10 @@ def legacy_path_issues(text: str) -> List[str]:
         "git restore --staged vk/" in normalized
         or "git restore --staged -- vk/" in normalized
     )
-    has_legacy_restore = "'vk-*'" in normalized or '"vk-*"' in normalized or " vk-*" in normalized
     if not has_vk_restore:
         issues.append("missing unified git restore --staged vk/ rule")
-    if not has_legacy_restore:
-        issues.append("missing legacy vk-* staged-cleanup rule")
+    if re.search(r"git restore --staged -- vk/ ['\"]vk-\*['\"]", text):
+        issues.append("vk-* restore glob unstages skill source; unstage vk/ only")
     if "shared/vk-core-contract.md" not in text and "../shared/vk-core-contract.md" not in text:
         issues.append("missing shared/vk-core-contract.md reference")
     shared_result_tokens = (

@@ -2,9 +2,9 @@
 """Validate git scope before invoking vkpush.
 
 Purpose:
-- Do not assume vkpush only commits staged content.
-- Block when the worktree still contains unrelated unstaged/untracked changes.
-- Allow local record files (`vk/`, `vk-*/`) and `.gitignore` to remain outside the staged set.
+- vkpush commits staged files only; still block unrelated dirty worktree files.
+- Allow unstaged local records under `vk/` and `.gitignore` edits.
+- Do not treat `vk-*` product or skill directories as records.
 """
 
 from __future__ import annotations
@@ -17,7 +17,6 @@ from pathlib import Path
 
 
 ALLOWED_PREFIXES = ("vk/",)
-ALLOWED_LEGACY_PREFIX = "vk-"
 ALLOWED_EXACT = {".gitignore"}
 
 
@@ -45,10 +44,7 @@ def is_allowed_local(path: str) -> bool:
     normalized = path.strip()
     if normalized in ALLOWED_EXACT:
         return True
-    if normalized.startswith(ALLOWED_PREFIXES):
-        return True
-    first = normalized.split("/", 1)[0]
-    return first.startswith(ALLOWED_LEGACY_PREFIX)
+    return normalized.startswith(ALLOWED_PREFIXES)
 
 
 def parse_status(repo_root: Path) -> list[Item]:
@@ -126,13 +122,13 @@ def main() -> int:
         return 2
 
     if blocked_paths:
-        print("[BLOCK] Unstaged worktree changes are outside the allowed scope; do not assume vkpush only commits staged files.")
+        print("[BLOCK] Unstaged worktree changes are outside vk/ records and .gitignore.")
         print("blocked_paths:")
         for path in blocked_paths:
             print(f"- {path}")
         return 3
 
-    print("[OK] No out-of-scope dirty worktree files. If you still call vkpush, re-check git diff --cached first.")
+    print("[OK] Worktree dirty files are only vk/ records or .gitignore. vkpush will commit staged files only.")
     return 0
 
 

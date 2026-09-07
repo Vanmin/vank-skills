@@ -3,120 +3,176 @@
 ## When to read this file
 
 - Load only after the task is confirmed as backend design, architecture review, implementation gating, or backend review.
-- This is the detailed rule book for `vk-restrict`. Do not paste it wholesale into host output. Distill constraints, gates, and verification items.
+- Distill constraints, gates, and verification items. Do not paste this file wholesale.
+- Every hard-looking rule below is a **default**, not a universal ban. Record: Applies / Risk / Allowed exception / Evidence.
+
+## How to apply a rule
+
+For each candidate constraint, write four fields before treating it as blocking:
+
+| Field | Meaning |
+| --- | --- |
+| Applies | Which path, data, or SLO makes the rule relevant |
+| Risk | What fails if the rule is ignored |
+| Allowed exception | When the rule does not apply, and what must still be true |
+| Evidence | How the exception or the compliant design will be verified |
+
+Empty advice such as "make it faster" or "add a cache" is not a gate.
 
 ## 1. Three-axis frame
 
 ### Data flow
 
 - Draw the shortest business chain: request entry -> validation -> auth -> read/write path -> async path -> callback/compensation.
-- For each hop answer: where data comes from and goes, sync vs async, whether it stampedes origin, who compensates on failure, whether the user is blocked on the main path.
+- For each hop: where data comes from and goes, sync vs async, stampede risk, who compensates on failure, whether the user is blocked on the main path.
 
 ### IO
 
 - Count IO on the main and async paths: MySQL, Redis, RPC/HTTP, MQ, cron/scan jobs.
-- Goal: fewest IO to finish the job, with batching, degradation, and rate limits on hot paths.
+- Goal: enough IO to preserve correctness first, then fewest extra round trips on hot paths.
 
 ### Dependencies
 
 - List upstream entry, this service, hard deps, soft deps, degrade path.
 - Ask whether a dependency failure becomes an avalanche or visible user jitter.
 
-## 2. Database and IO rules
+## 2. Database and IO
 
 ### 2.1 IO in loops
 
-- Do not issue MySQL, Redis, or RPC IO inside a `for` loop.
-- Prefer batch APIs: Redis `MGET` / `HMGET`, SQL `IN` / bulk write, batch RPC.
-- If batching is impossible now, label it as a blocking risk and name the convergence path.
+- **Applies:** N+1 chatty loops on a request path or hot job, where a batch API exists.
+- **Risk:** latency cliffs, pool exhaustion, amplified downstream load.
+- **Allowed exception:** cursor/page loops that *must* bound each batch (pagination, backfill, fan-out with a cap). One IO per page is expected; unbounded per-item IO is not.
+- **Evidence:** show batch API or per-page cap, plus a test or EXPLAIN for the hot query.
 
 ### 2.2 Scans
 
-- Avoid wide table scans and full cache scans.
-- Avoid unindexed queries and unbounded Redis scans.
-- When a scan is required, require off-peak execution, cursor or limit, per-batch cap, and interrupt/resume.
+- **Applies:** list/search/export/cron that can touch unbounded rows or keys.
+- **Risk:** full table or `SCAN` without cursor blows up CPU and cache.
+- **Allowed exception:** off-peak backfill with cursor or keyset, per-batch limit, and interrupt/resume.
+- **Evidence:** index or keyset predicate, batch size, resume token.
 
-### 2.3 Read/write strategy
+### 2.3 Sync vs async writes
 
-- State read/write ratio before choosing indexes and storage.
-- For hot synchronous writes, evaluate async write, bulk write, or MQ/Redis then batched persist.
-- Do not push a burst of synchronous writes onto MySQL at peak.
+- **Applies:** a write whose durability, ordering, or user-visible ack matters.
+- **Risk:** dropping a durable write onto MQ "for throughput" loses money, inventory, or audit; bursting sync writes at peak saturates primary.
+- **Allowed exception:** derived or eventually-consistent projections may be async if the source of truth is already committed and compensation exists.
+- **Evidence:** state what is durable at ack time; name the consumer retry/idempotency path.
 
-## 3. Redis
+## 3. Correctness first
 
-### 3.1 TTL
+### 3.1 Transactions, isolation, uniqueness, lost updates
 
-- Keys need a sensible TTL by default.
-- Long-lived keys are for rare config dictionaries only.
-- TTL that is too short causes origin stampedes.
+- **Applies:** multi-row or multi-store mutations, counters, balances, unique business keys.
+- **Risk:** partial commit, dirty/non-repeatable reads, duplicate unique keys, lost updates.
+- **Allowed exception:** read-only or single-row compare-and-set with an explicit version/etag.
+- **Evidence:** transaction boundary, isolation choice, unique constraint or idempotency table, concurrent-update test.
 
-### 3.2 Hot keys and breakdown
+### 3.2 Database and messages
 
-- Do not invalidate a hot key with delete-then-lazy-load.
-- Prefer active update, logical expiry, a mutex, or single-threaded origin refresh.
+- **Applies:** dual-write to DB and MQ, outbox, callbacks.
+- **Risk:** committed DB without event, event without DB, duplicate or out-of-order consumption.
+- **Allowed exception:** at-least-once plus idempotent consumers; outbox/inbox if the product already has that pattern.
+- **Evidence:** duplicate and out-of-order consumer tests; failure-replay path.
 
-### 3.3 BigKey
+### 3.3 Tenants, object ACL, idempotency keys
 
-- Estimate size before choosing a structure.
-- Split by business or time dimension when needed.
+- **Applies:** any To-C or multi-tenant mutate/read by id.
+- **Risk:** cross-tenant or cross-object access; replayed clients double-charge.
+- **Allowed exception:** none for authz on object ids; idempotency key scope (user, tenant, operation) and TTL must be explicit.
+- **Evidence:** unauthorized and cross-tenant tests; key uniqueness window.
 
-### 3.4 Pipeline / Lua
+### 3.4 Timeouts, retries, pools, backpressure
 
-- Independent commands: Pipeline.
-- Atomicity: Lua.
-- Do not split Redis calls that can share one RTT.
+- **Applies:** outbound RPC/DB/MQ on the request path or workers.
+- **Risk:** retry storms, unbounded concurrency, pool wait, hung clients.
+- **Allowed exception:** retries only with budget, jitter, and idempotent ops; bounded worker concurrency.
+- **Evidence:** timeout and max-attempt numbers; pool size vs concurrency; what happens on cancel.
 
-## 4. Distributed robustness
+### 3.5 Schema change, backfill, compatibility, recovery
 
-### 4.1 Locks
+- **Applies:** migrations, dual-write periods, API field changes.
+- **Risk:** lock storms, unreadable old rows, new code vs old rows, no rollback.
+- **Allowed exception:** expand/migrate/contract with dual-read when needed; batch backfill with resume.
+- **Evidence:** migration plan, backfill batching, old-and-new reader test, failure recovery.
 
-- Set a reliable lease.
-- Answer: what happens if work outlives the lock; what happens after a pod restart.
-- Common fallbacks: watchdog renew, compensation jobs, idempotent replay.
+## 4. Redis
 
-### 4.2 Idempotency
+### 4.1 TTL
 
-- MQ consumers, cron, and external callbacks that mutate state must tolerate duplicates.
-- "It should only run once" is not a design.
+- **Applies:** cache and ephemeral keys.
+- **Risk:** no TTL grows memory; too-short TTL stampedes origin.
+- **Allowed exception:** true source-of-truth keys (lock records, idempotency rows) with a documented eviction or TTL that matches the business window.
+- **Evidence:** TTL or documented lifetime per key class.
 
-### 4.3 Runtime and retry
+### 4.2 Hot keys and breakdown
 
-- For cron and MQ: duration, concurrency, retry interval, max retries, DLQ/alert/human path.
+- **Applies:** hot read keys, delete-then-reload invalidation.
+- **Risk:** thundering herd.
+- **Allowed exception:** active update, logical expiry, single-flight refresh.
+- **Evidence:** invalidation method named on the write path.
 
-## 5. To-C extras
+### 4.3 BigKey and Pipeline / Lua
 
-### 5.1 Traffic protection
+- **Applies:** large collections or multi-command atomicity.
+- **Risk:** slow commands, blocking Redis, split RTT, lost atomicity.
+- **Allowed exception:** split by business/time; Pipeline for independent commands; Lua only when atomicity is required.
+- **Evidence:** size estimate or command grouping.
 
-- Evaluate rate limit, degradation, and circuit break.
-- Rate limit: QPS cap, gateway vs app, friendly overflow response.
-- Degradation: which paths are non-core, what can turn off at peak.
-- Breaker: which downstreams are risky, how to fail fast.
+## 5. Distributed robustness
 
-### 5.2 Cache and RT
+### 5.1 Locks
 
-- User-facing core APIs care about TP99, often 200ms or 100ms.
-- Hot, slowly changing data: local cache -> Redis -> DB.
-- Do not make the user wait for work that can be async.
+- **Applies:** mutex around a critical section.
+- **Risk:** lock timeout while work continues; lock lost on restart.
+- **Allowed exception:** lease + watchdog or lock-free compare-and-set when that is the repo pattern.
+- **Evidence:** lease, owner, timeout, compensation.
 
-### 5.3 Abuse and safety
+### 5.2 Idempotency and retry runtime
 
-- Asset, signup, and lottery paths need risk control or bot checks.
-- Recover `userId` from the token server-side; do not trust client-supplied IDs.
-- Replay protection: nonce, timestamp, signature.
-- Mask phone, ID, and bank numbers in logs and UI.
+- **Applies:** MQ consumers, cron, external callbacks that mutate.
+- **Risk:** duplicate side effects.
+- **Allowed exception:** none for "it should only run once" as a hope; duplicates must be safe.
+- **Evidence:** duration, concurrency, retry interval, max retries, DLQ/alert path.
 
-### 5.4 Compatibility
+## 6. To-C extras
 
-- App/mini-program clients stay on old versions.
-- Published APIs stay forward compatible: no silent field deletes, no semantic flips, new required fields need defaults, version `/v1` `/v2` when needed.
+### 6.1 Traffic protection
 
-### 5.5 Observability
+- **Applies:** public or bursty user-facing paths.
+- **Risk:** overload, unfriendly errors.
+- **Allowed exception:** internal admin tools with auth may skip public rate limits.
+- **Evidence:** rate limit / degrade / breaker placement.
 
-- TraceId on the main chain.
-- Metrics: error rate, RT, core business KPIs, queue depth.
-- Support reconstructing the full chain from a user identifier during complaints.
+### 6.2 Cache and RT
 
-## 6. Where to land output
+- **Applies:** user-facing core APIs with an RT SLO.
+- **Risk:** user waits on work that can be async; missing SLO.
+- **Allowed exception:** do not invent TP99 numbers; use `ASSUMPTION:` / `TBD` or the repo SLO.
+- **Evidence:** measured or documented SLO; what stays on the sync path.
+
+### 6.3 Abuse and safety
+
+- **Applies:** assets, signup, lottery, identifiers from the client.
+- **Risk:** bots, IDOR, replay, PII in logs.
+- **Allowed exception:** none for trusting client-supplied `userId`.
+- **Evidence:** server-side identity, replay protection, masking.
+
+### 6.4 Compatibility
+
+- **Applies:** published HTTP APIs and app/mini-program clients.
+- **Risk:** silent field deletes, new required fields, semantic flips.
+- **Allowed exception:** versioned `/v2` when breaking is explicit.
+- **Evidence:** compatibility note in the review or DSL.
+
+### 6.5 Observability
+
+- **Applies:** production user-facing or money paths.
+- **Risk:** cannot reconstruct a complaint.
+- **Allowed exception:** local prototypes.
+- **Evidence:** TraceId, error/RT/KPI metrics, queue depth where relevant.
+
+## 7. Where to land output
 
 ### `vk-request`
 

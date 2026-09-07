@@ -17,7 +17,7 @@ description: Compress natural-language intent into a structured prompt DSL align
 - Load `../vk-restrict/SKILL.md` when the request involves backend design, APIs, DB, Redis, RPC, MQ, cron, distributed locks, or To-C high-concurrency paths.
 - Progressive disclosure: read the restrict skill first; load [../vk-restrict/references/backend-scheme-guardrails.md](../vk-restrict/references/backend-scheme-guardrails.md) only for detailed backend or To-C rules.
 - Embed restrict output in existing template fields only. Prefer `NFRS`, `Data Flow Rules`, `Known Issues`, `Constraint System`, `Validation System`, `Success Criteria`, `DO_NOT_LIST`.
-- Backend DSLs must encode: main data-flow chain, no IO-in-loop, batch read/write, scan boundaries, cache TTL / hot-key policy, idempotency, retry/timeout, compatibility, observability. To-C adds rate limit / degrade / break, abuse prevention, and RT.
+- Backend DSLs must encode: main data-flow chain, IO policy with exceptions, batch vs page loops, scan boundaries, durability vs async, cache TTL / hot-key policy, idempotency, retry/timeout, compatibility, observability. To-C adds rate limit / degrade / break, abuse prevention, and RT.
 - Missing facts become `ASSUMPTION:` / `TBD`. Do not invent capacity, QPS, RT, or storage choices.
 
 ## Purpose
@@ -62,8 +62,8 @@ description: Compress natural-language intent into a structured prompt DSL align
 - Prefer questions on scope, success criteria, core NFRs, and whether this is truly multi-agent.
 - Defer `PHASE_2_*`, `PHASE_N_NAME`, non-critical Custom Agents, and defaultable status fields.
 6. Reuse compression patterns from [references/examples.md](references/examples.md).
-7. Reply order: Summary card, Request summary, Key assumptions, Prompt DSL, Document path, Validation, Auto-evolution.
-8. Save immediately:
+7. Reply order: Summary card, Request summary, Key assumptions, Prompt DSL, Document path (or `inline — not saved`), Validation, Auto-evolution.
+8. Persist only when the user asked for a durable file, or the DSL is a cross-session handoff. Then:
 
 ```bash
 python3 vk-request/scripts/save_request_doc.py \
@@ -71,24 +71,24 @@ python3 vk-request/scripts/save_request_doc.py \
   --source-request "<raw user request>"
 ```
 
-Pipe the full result on stdin.
-9. Validate immediately:
+Pipe the full result on stdin. Prefer updating an existing `./vk/request/` file for the same task instead of creating a new one.
+9. Validate the DSL text before treating it as final. If a file was written, run:
 
 ```bash
 python3 vk-request/scripts/validate_request_doc.py "<document-path>"
 ```
 
-Only a passing validation is a final answer. On failure, fix, save, and validate again.
+If the result stayed inline, validate against the same rules in-memory or via a temp file you delete. A missing save is not a failed answer.
 
 ## Output format
 
 - Spoken language follows the user.
 - Lead with a summary card titled `😁 + short task summary`.
 - Put the Prompt DSL in a fenced block.
-- Document path must be the path the save script returned.
-- Validation must quote the checker result.
+- Document path is the save-script path, or `inline — not saved`.
+- Validation must quote the checker result when a file was written.
 - If a script fails, report the error. Do not pretend the file was written.
-- If the run exposed a template pitfall, information-gap pattern, or external-practice shift, add Auto-evolution and `::automation-update{...}` when useful.
+- If the run exposed a template pitfall or information-gap pattern, add Auto-evolution. Host directives such as `::automation-update` are optional.
 
 ## Compact mode
 
@@ -120,7 +120,7 @@ python3 "$VK_SKILLS_DIR/vank/vk-submit/scripts/migrate_vk_record_dirs.py" --repo
 - `./vk/request/` stays local and untracked.
 - Ensure `.gitignore` has `vk/`; add `vk-*/` only when the repository is not
   the Vank package source, where that pattern would ignore tracked child skills.
-- If staged by mistake: `git restore --staged -- vk/ 'vk-*'`
+- If staged by mistake: `git restore --staged -- vk/`
 
 ## Template boundary
 

@@ -44,7 +44,7 @@ bash scripts/install.sh
 bash scripts/install.sh --dry-run
 ```
 
-若宿主不会递归扫描嵌套 `SKILL.md`：
+若宿主不会递归扫描嵌套 `SKILL.md`，安装后可能只看得到 `$vank`、看不到 `$vk-work`。请再跑：
 
 ```bash
 bash scripts/install.sh --with-shims
@@ -80,8 +80,8 @@ question / read / roadmap → request → restrict → work → review → submi
 
 ### 可选的 gstack 交付门禁
 
-处理非简单实现任务时，`vk-work` 仍是总控，并会读取
-[Vank–gstack 交付桥接规则](references/gstack-bridge.md)。仅当需要网页 QA、性能证据、安全专项审查或已获授权的发布时，才调用当前宿主可用的 gstack 专项能力；不会复制 gstack、不会整套运行，也不会重复 Vank 的后端约束和本地记录。
+`vk-work` 仍是总控。本地验证之后，仅当专项能力真正匹配时才读
+[Vank–gstack 交付桥接规则](references/gstack-bridge.md)：有页面时的浏览器验收、用户要求的额外安全审查、或已授权的发布。后端容量测试留在 Vank。日常提交只走 `vk-submit`。gstack `qa` 不得提交。
 
 ### 子技能
 
@@ -106,11 +106,12 @@ question / read / roadmap → request → restrict → work → review → submi
 只有重要的技能执行记录才写在 **目标项目** 里，不写进本包；Vank 不会因为技能运行过就自动建档：
 
 - `./vk/<skill-key>/`（例如 `vk-work` → `./vk/work/`）
+- 长任务恢复：只维护一份 `./vk/work/checkpoint.md`，就地更新
 - 目标项目 `.gitignore` 忽略 `vk/`
 - 记录跨模块决策、风险、可复用方案、交接、阻塞和用户明确要求保留的内容；普通问答、状态确认、短暂阅读和已验证的小改动默认不记录。
 - roadmap、DSL、文章等用户直接要求的文件仍会照常生成，它们不是额外的执行记录。
 
-可选的长期项目上下文：`./vank/context|specs|decisions|status/`。见 [references/contract.md](references/contract.md)。
+可选、可提交的产品上下文：`./vank/context|specs|decisions/`。不要在那里再写一份「当前状态」。见 [references/contract.md](references/contract.md)。
 
 ## 本包维护
 

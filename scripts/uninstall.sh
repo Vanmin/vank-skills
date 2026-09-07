@@ -11,12 +11,25 @@ CURSOR_DIR="${CURSOR_SKILLS_DIR:-$HOME/.cursor/skills}"
 AGENTS_DIR="${AGENTS_SKILLS_DIR:-$HOME/.agents/skills}"
 LOCAL_BIN_DIR="${LOCAL_BIN_DIR:-$HOME/.local/bin}"
 DRY_RUN="false"
+SKILL_NAMES=()
 
-SKILL_NAMES=(
-  vk-question vk-read vk-roadmap vk-request vk-restrict
-  vk-work vk-review vk-submit vk-writer vk-ios-agents
-  vk-diagram-guard vk-write-lark vk-skill-man
-)
+discover_skill_names() {
+  local skill_md name
+  local names=()
+  shopt -s nullglob
+  for skill_md in "$ROOT_DIR"/vk-*/SKILL.md; do
+    name="$(basename "$(dirname "$skill_md")")"
+    names+=("$name")
+  done
+  shopt -u nullglob
+  if [[ ${#names[@]} -eq 0 ]]; then
+    echo "no child skills found under $ROOT_DIR/vk-*/SKILL.md" >&2
+    exit 1
+  fi
+  while IFS= read -r name; do
+    SKILL_NAMES+=("$name")
+  done < <(printf '%s\n' "${names[@]}" | sort)
+}
 
 usage() {
   cat <<'EOF'
@@ -72,6 +85,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+discover_skill_names
 echo "repo=$ROOT_DIR"
 echo "dry_run=$DRY_RUN"
 

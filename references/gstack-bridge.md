@@ -1,56 +1,69 @@
 # Vank–gstack Delivery Bridge
 
-Use this reference only from `vk-work` after its local build and targeted
-verification gates. Vank remains the controller and the owner of durable
-project records under `./vk/`; gstack supplies specialist execution where it
-has a real advantage.
+Use this reference only from `vk-work` after local build and the matching
+verification-matrix checks. Vank remains the controller and the owner of
+durable project records under `./vk/`. gstack supplies specialist execution
+only where it has a real advantage.
+
+Do not load this file for a trivial edit. Do not load it merely because
+gstack is installed.
+
+## Ownership
+
+| Concern | Owner |
+| --- | --- |
+| Backend implementation, transactions, concurrency, API tests, language-native profiling | Vank (`vk-work`, `vk-restrict`, `vk-review`) |
+| Browser / visual acceptance when a user-visible web page changed | gstack `browse` (or `qa` in inspect-only mode) |
+| High-risk auth, payments, PII, secrets — at design time, not after the fact | `vk-restrict` first; gstack `cso` only if installed and the user wants that extra pass |
+| Ordinary commit and push | `vk-submit` only |
+| Explicitly authorized PR land or deploy | gstack `ship` / `land-and-deploy` **instead of** `vk-submit`, never both |
+| Post-deploy observation after a user-authorized deploy | gstack `canary` |
+
+Choose exactly one command owner for commit and push.
 
 ## Selection
 
-Do not run gstack merely because it is installed. Select one or more of the
-following gates only when their entry criteria are met and the corresponding
-gstack skill is available in the current host.
+Select a specialist only when its entry criteria match **and** the installed
+skill actually covers that job.
 
-| Entry criteria | gstack specialist | Vank responsibility |
+| Entry criteria | Specialist | Do not use it for |
 | --- | --- | --- |
-| A user-visible web flow changed, or a browser regression is plausible | `qa` / `browse` | Define the user journey; save result and evidence in `./vk/work/`. |
-| Latency, throughput, or performance-regression risk is material | `benchmark` | Define the acceptance threshold and record the interpretation. |
-| Auth, permissions, secrets, payments, PII, or privileged operations changed | `cso` | Keep `vk-restrict` data-flow and dependency gate; record remediation decisions. |
-| User explicitly authorizes PR landing or deployment | `ship` or `land-and-deploy` | Preserve scope evidence and release decision; do not deploy without authorization. |
-| A deployment occurred and user authorizes post-deploy observation | `canary` | Record the observation window, signals, and rollback owner. |
+| A user-visible web flow changed, or a browser regression is plausible | `browse`, or `qa` without its submit/fix-and-commit steps | Backend capacity, DB, MQ, API-only changes |
+| User explicitly wants an independent security review of a high-risk change | `cso` | Substituting `vk-restrict` data-flow gates |
+| User explicitly authorizes landing a PR or deploying | `ship` or `land-and-deploy` | Ordinary scoped commits |
+| A deployment already happened and the user authorizes observation | `canary` | Inventing production access |
 
-Follow the selected gstack skill in full. If its instructions conflict with
-the user's explicit authorization boundary, stop at that boundary and report
-the conflict.
+Do **not** map "latency / throughput / backend performance risk" to gstack
+`benchmark`. That skill is web-page loading, Web Vitals, and asset weight. For
+backend capacity use language-native tools (`go test -bench`, pprof, k6/HTTP
+load against the service) and record the interpretation in `./vk/work/` only
+when the run is material.
 
-## Ownership and non-duplication
+Do **not** let gstack `qa` commit, push, or "fix then submit". If `qa`
+instructions include those steps, stop after inspection/evidence and return
+control to Vank.
 
-- Vank owns requirements (`vk-request`), backend design constraints
-  (`vk-restrict`), implementation control (`vk-work`), local evidence, and
-  the default changed-code review (`vk-review`).
-- gstack owns browser-driven QA, performance probing, specialist security
-  review, and its release or post-deploy operations.
-- Do not run both `vk-review` and gstack `review` on the same diff by default.
-  Use a second review only when the user asks for an independent review angle.
-- Choose exactly one command owner for commit and push. For a normal scoped
-  submission, use `vk-submit`; for an explicitly authorized gstack release
-  flow, let `ship` or `land-and-deploy` own its release actions after Vank has
-  produced the scope and verification evidence.
-- Do not hardcode paths to gstack, copy its scripts, or assume browser,
-  deployment, cookie, or production credentials exist.
+Do not run both `vk-review` and gstack `review` on the same diff by default.
+
+Follow the selected gstack skill in full only inside the boundary above. If
+its instructions conflict with the user's authorization, stop and report.
+
+Do not hardcode paths to gstack, copy its scripts, or assume browser,
+deployment, cookie, or production credentials exist.
 
 ## Evidence handoff
 
-Before invoking a selected gstack specialist, provide the minimum context it
-needs: change scope, target environment, acceptance criteria, known risks,
-and any safe test account or fixture supplied by the user.
+Before invoking a selected specialist, give it: change scope, target
+environment, acceptance criteria, known risks, and any safe fixture the user
+supplied.
 
-After it returns, append a concise handoff to the current `./vk/work/` record:
+After it returns, if a `./vk/work/` record already exists for this task,
+append:
 
-- selected specialist and why it was selected;
-- command or flow performed and outcome;
-- evidence location or the reason evidence could not be captured;
-- remaining risk, owner, and next action.
+- selected specialist and why
+- command or flow and outcome
+- evidence location, or why evidence could not be captured
+- remaining risk, owner, next action
 
-If no bridge gate matched, record that Vank-only verification was deliberate;
-do not report gstack as skipped due to an error.
+If no bridge gate matched, say that Vank-only verification was deliberate.
+Do not create a record just to document a skipped bridge.

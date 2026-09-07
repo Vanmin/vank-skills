@@ -12,7 +12,7 @@ description: Orchestrate Codex-based iOS app development by coordinating multipl
 - Local records go under `./vk/ios-agents/`.
 - For a real multi-skill delivery or a material gate decision, write plan, execution, and gate results to `./vk/ios-agents/`. Do not create a record for a brief intake, routing decision, or routine status update.
 - `.gitignore` must include `vk/`.
-- If records were staged by mistake: `git restore --staged -- vk/ 'vk-*'`.
+- If records were staged by mistake: `git restore --staged -- vk/`.
 
 ## Overview
 

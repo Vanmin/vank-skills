@@ -1,4 +1,4 @@
 interface:
   display_name: "VK Work"
-  short_description: "Long-running subagent-first implementation controller"
-  default_prompt: "Use $vk-work for this task and follow the skill contract."
+  short_description: "Scoped implementation with gated backend checks"
+  default_prompt: "Use $vk-work. Classify trivial/standard/high-risk first and load extra references only when a gate matches."

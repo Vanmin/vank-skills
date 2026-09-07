@@ -131,10 +131,9 @@ Step 8: Important Reading Summary & Local Documentation
   unresolved ambiguity will be reused or handed off.
 - When a document is warranted, save it at the following path:
 
-  ./vk/read/READ_SUMMARY_xxx.md
+  ./vk/read/READ_SUMMARY_<slug>.md
 
-- When a document is warranted, the file name suffix `xxx` MUST be written in Chinese
-  (e.g. project / module / date).
+- Use an English slug unless the user asked otherwise.
 
 - A warranted summary document MUST include:
   - Project purpose and problem domain
@@ -150,8 +149,9 @@ not create a local document.
 --------------------------------
 Step 9: Git Hygiene (WHEN A RECORD WAS CREATED)
 --------------------------------
-- Only when a record was created, auto-migrate legacy local record directories:
-  - `VK_SKILLS_DIR="${VK_SKILLS_DIR:-$HOME/.codex/skills}" && python3 "$VK_SKILLS_DIR/vk-submit/scripts/migrate_vk_record_dirs.py" --repo-root .`
+- Only when a record was created, auto-migrate legacy local record directories
+  using the script inside the vank bundle (`vk-submit/scripts/migrate_vk_record_dirs.py`),
+  not `$HOME/.codex/skills/vk-submit/...`.
 - The entire `vk/read/` directory is for LOCAL reference only.
 - Only when a record was created, ensure `.gitignore` contains `vk/`. Add the
   legacy compatibility rule `vk-*/` only when the repository is not the Vank
@@ -160,7 +160,7 @@ Step 9: Git Hygiene (WHEN A RECORD WAS CREATED)
   - `rg -n '^vk/$' .gitignore || printf '\nvk/\n' >> .gitignore`
   - `rg -n '^vk-\\*/$' .gitignore || printf 'vk-*/\n' >> .gitignore`
 - If local records under `vk/` were staged by mistake, remove them from staging:
-  - `git restore --staged -- vk/ 'vk-*'`
+  - `git restore --staged -- vk/`
 - Ensure no reading notes or understanding artifacts are committed to the repository.
 
 ================================================================================
@@ -169,7 +169,7 @@ OUTPUT CONSTRAINTS
 
 ================================================================================
 
-- All natural language output MUST be in Chinese.
+- Spoken results follow the user's language unless the repository requires another language.
 - Final output MUST start with the summary card, and its title MUST use `😁 + short task summary`.
 - Use structured, bullet-point or sectioned explanations.
 - Avoid long, unstructured paragraphs.

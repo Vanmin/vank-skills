@@ -12,7 +12,7 @@ description: Gate and repair flowchart assets in a writing-project article direc
 - Local records go under `./vk/diagram-guard/`.
 - `assets/diagrams/diagram_guard_report.json` remains the required gate output. Write a separate local summary or evolution note only for a material repair, blocker, or reusable bad case.
 - `.gitignore` must include `vk/`.
-- If records were staged by mistake: `git restore --staged -- vk/ 'vk-*'`.
+- If records were staged by mistake: `git restore --staged -- vk/`.
 
 ## Overview
 
