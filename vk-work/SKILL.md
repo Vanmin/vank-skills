@@ -60,7 +60,9 @@ accepted.
 1. **Scope lock** — in and out of scope; git baseline (`status`, `diff`, `diff --cached`); isolate unrelated dirty files.
 2. **Implement** — production code in the locked files; short cycles; no speculative refactors.
 3. **Verify** — repo tests/lint/build for the slice; then only the matching rows in `references/verification-matrix.md` when that file was loaded.
-4. **Handoff** — summary in the reply; record only if warranted; `vk-submit` only when the user asked to commit.
+4. **Synchronize and hand off** — update the canonical requirement and
+   linked review before declaring completion; extra summaries only if
+   warranted; `vk-submit` only when the user asked to commit.
 
 Frontend: visual consistency and simple UI structure.
 Backend: correctness (transactions, authz, compatibility) before throughput tricks.
@@ -69,9 +71,32 @@ Do not add frameworks or mix frontend/backend paradigms. Follow the repo.
 
 ## Records and resume
 
+- Follow [document lifecycle](../shared/document-lifecycle.md) for feature
+  changes, repairs, completion, and acceptance. Resolve the existing
+  requirement/review first; update current content, affected feature items,
+  criteria, status, revision, and history in place. Log adjustments from any
+  source, including implementation decisions and acceptance feedback.
+- For a functional change without a requirement file, create a concise
+  requirement in `./vk/request/`; do not force a full DSL. Internal-only
+  edits without functional change remain subject to selective records.
+- Start work with affected items `in_progress`. Once implementation and
+  required checks pass, record actual behavior/evidence and mark them
+  `completed_pending_acceptance`. Mark `accepted` only on explicit user
+  acceptance or a previously agreed acceptance mechanism; record its scope,
+  time, and result. Partial completion must remain visible in aggregate status.
+- Preserve previous acceptance on later changes; reopen only affected items
+  and record delivery iterations explicitly. Update linked findings with
+  repair details and verification, never treating code edits as proof of a fix.
+- Required requirement/review synchronization is part of completion even
+  for a small repair. If it fails, report code complete/documentation pending.
 - Ordinary Q&A and trivial verified edits: no `./vk/work/` file.
-- Material or long-running work: one checkpoint `./vk/work/checkpoint.md`, updated in place (HEAD, done, verification, blockers, next step). On resume, read it, then confirm branch and commit before reusing conclusions.
-- Optional extra summaries use an English slug, e.g. `task-summary-<slug>.md`.
+- Material or long-running work: one checkpoint `./vk/work/checkpoint.md`,
+  updated in place (task ID, canonical requirement/review paths, HEAD, done,
+  verification, blockers, next step). Link to document ledgers instead of
+  copying them. On resume, confirm branch, commit, and relevant dirty diff
+  before reusing conclusions.
+- Optional extra summaries use a stable English slug, e.g.
+  `task-summary-<slug>.md`; update an existing summary for the same matter.
 - `.gitignore` must include `vk/`. Unstage with `git restore --staged -- vk/`.
 - Migrate legacy dirs with `../vk-submit/scripts/migrate_vk_record_dirs.py`.
 

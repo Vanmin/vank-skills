@@ -32,6 +32,20 @@
     if no additional execution record is warranted.
 - When no record is warranted, do not create an empty directory or placeholder
   file. State `not created — routine result` in the final result instead.
+- Before creating or updating a durable document, read
+  [document lifecycle](document-lifecycle.md). Resolve the existing matter
+  first; keep one canonical document per matter and purpose, update it in
+  place, and preserve revision history. A skill invocation is not a revision
+  or a new iteration.
+- Requirement/function changes, implementation completion, and acceptance
+  transitions require synchronizing the canonical requirement document,
+  including feature status, current scope/criteria, and change history.
+  This is required even when no extra execution summary is warranted.
+  Reuse the project's designated requirement file; if none exists for a
+  functional change, create a concise requirement under `./vk/request/`.
+  Pure internal edits without a functional/requirement change still follow
+  the selective-record policy. Never mark implementation as accepted without
+  explicit acceptance or a previously agreed acceptance mechanism.
 - If the target project still has legacy `vk-xxx/` record directories, migrate before writing:
 
 ```bash
@@ -142,6 +156,11 @@ git restore --staged -- vk/
 - `Record:` is the artifact directory, such as `./vk/work/...`, or
   `not created — routine result` when the selective record policy did not
   warrant a file.
+
+- When a requirement or review was updated, report its canonical path,
+  revision, current iteration/status, and any unverified findings. If code
+  is finished but required document synchronization failed, report partial
+  completion rather than claiming the whole task is complete.
 
 - If the host supports directives, you may append:
   - `::automation-update{...}`

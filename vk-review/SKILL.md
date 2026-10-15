@@ -66,6 +66,8 @@ WORKFLOW
    - unstaged diff
    - explicit file list from the user
    - generated artifact directory
+   - resolve the canonical review and related requirement by task/path;
+     read earlier findings and baselines before beginning a repeat review
 2. Read only the files needed to understand the change.
 3. Check behavior first, style second.
 4. When the task needs a baseline artifact, prefer:
@@ -75,7 +77,17 @@ bash scripts/vk-review_baseline.sh --mode quick
 ```
 
 5. Use `--mode full` only when the change is wide enough to justify a broader scan.
-6. Summarize findings with file references and concrete failure modes.
+6. Recheck relevant earlier findings, preserving stable IDs and original
+   evidence. Mark each previous finding rechecked/result or `not rechecked`
+   for this run; absence from the new diff is not resolution.
+7. Update the same canonical review, its revision/history, and affected
+   requirement items/status/evidence following
+   [document lifecycle](../shared/document-lifecycle.md). Code changes mean
+   `fixed_pending_verification`; only verified repair becomes
+   `verified_resolved`. A regression reopens the same finding ID.
+8. Summarize new findings separately from unresolved historical findings,
+   with file references and concrete failure modes. A clean review does
+   not establish product acceptance.
 
 ================================================================================
 
@@ -85,10 +97,17 @@ OUTPUT RULES
 
 - Findings must be ordered by severity.
 - Each finding should include:
+  - stable finding ID, current status, first discovery and baseline
   - file / location
   - observed issue
   - user-visible or engineering impact
   - expected correction direction
+  - repair details, verification evidence/baseline, and status-change history
+- Preserve deferred/not-applicable findings with reasons. Do not erase old
+  findings or close them because this run omitted or did not reproduce them
+  without adequate verification. Keep time-stamped script evidence under
+  artifacts; link it from the single canonical review rather than treating
+  each baseline summary as a replacement review.
 - Keep claims evidence-based. Do not speculate without marking assumptions.
 - If a review artifact is generated, report its path under `./vk/review/`.
 

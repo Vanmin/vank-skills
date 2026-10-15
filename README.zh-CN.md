@@ -110,6 +110,8 @@ question / read / roadmap → request → restrict → work → review → submi
 - 目标项目 `.gitignore` 忽略 `vk/`
 - 记录跨模块决策、风险、可复用方案、交接、阻塞和用户明确要求保留的内容；普通问答、状态确认、短暂阅读和已验证的小改动默认不记录。
 - roadmap、DSL、文章等用户直接要求的文件仍会照常生成，它们不是额外的执行记录。
+- 同一事项使用固定编号与文档路径，在原文档上更新当前内容、修订号和变更历史；需求迭代明确编号及关联，重复调用技能不会自动产生新版本。已有项目需求文档继续作为正式来源。
+- 功能调整、开发完成、验收都必须回写需求正文、功能状态和历史。开发完成待验收与已验收分开；Review 问题保留固定编号、修复记录及复验状态。规则见 [文档生命周期](shared/document-lifecycle.md)。
 
 可选、可提交的产品上下文：`./vank/context|specs|decisions/`。不要在那里再写一份「当前状态」。见 [references/contract.md](references/contract.md)。
 

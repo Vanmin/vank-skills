@@ -62,7 +62,16 @@ Run repo-native tests/lint/build for the slice. Then apply
 Distinguish compile evidence, targeted tests, broadened regression, and
 blocked checks. Failed required checks mean the task is not complete.
 
-## 8. Record and git hygiene (when warranted)
+## 8. Synchronize documents and apply git hygiene
+
+Before completion, follow `../../shared/document-lifecycle.md`: update the
+canonical requirement's current behavior, feature items, criteria, states,
+revision/history, and evidence; update linked review repair/recheck states.
+Create a concise requirement if a functional change has none. This is
+mandatory even when no additional execution record is warranted. Required
+checks passing means completed pending acceptance, not automatically
+accepted. On acceptance, record the user/agreed mechanism, scope, time,
+and result. Preserve earlier acceptance and iteration history.
 
 Selective records only. One checkpoint file for a long task, updated in
 place: `./vk/work/checkpoint.md`.
@@ -82,4 +91,5 @@ Compare the post-change diff to the Step 2 baseline.
 ## 9. Submit handoff
 
 If the user asked to commit, hand off to `vk-submit` with objective, file
-scope, verification evidence, and risks. Do not ad-hoc commit.
+scope, verification evidence, risks, and canonical requirement/review
+paths/revisions/status. Do not ad-hoc commit.

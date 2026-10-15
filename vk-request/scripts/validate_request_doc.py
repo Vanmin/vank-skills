@@ -29,6 +29,17 @@ PLACEHOLDER_RE = re.compile(r"<<[^>\n]+>>")
 ALLOWED_PLACEHOLDERS = {
     "<<MULTI-AGENT CODING ORCHESTRATION TEMPLATE V3-FINAL>>",
 }
+HISTORY_START = "<!-- vk:history:start -->"
+HISTORY_END = "<!-- vk:history:end -->"
+
+
+def current_document_text(text: str) -> str:
+    """Validate current DSL only; historical diffs can contain old errors."""
+    if text.startswith("---\n"):
+        parts = text.split("\n---\n", 1)
+        if len(parts) == 2:
+            text = parts[1]
+    return text.split("\n" + HISTORY_START, 1)[0]
 
 
 def parse_args() -> argparse.Namespace:
@@ -65,15 +76,8 @@ def validate_order(positions: list[tuple[str, int]]) -> list[str]:
     return failures
 
 
-def main() -> int:
-    args = parse_args()
-    path = Path(args.path).resolve()
-    if not path.exists():
-        print("VALIDATION_STATUS=FAIL")
-        print(f"FAIL: file not found: {path}")
-        return 1
-
-    text = path.read_text(encoding="utf-8")
+def validate_text(text: str, max_placeholders: int = 0) -> tuple[list[str], list[str]]:
+    text = current_document_text(text)
     failures: list[str] = []
     warnings: list[str] = []
 
@@ -90,7 +94,7 @@ def main() -> int:
     placeholders = [
         match for match in PLACEHOLDER_RE.findall(text) if match not in ALLOWED_PLACEHOLDERS
     ]
-    if len(placeholders) > args.max_placeholders:
+    if len(placeholders) > max_placeholders:
         failures.append(
             "unreplaced placeholders: "
             + ", ".join(placeholders[:10])
@@ -102,6 +106,20 @@ def main() -> int:
             "No `ASSUMPTION:` / `TBD` marker found. If the original request was incomplete, confirm nothing was invented."
         )
 
+    return failures, warnings
+
+
+def main() -> int:
+    args = parse_args()
+    path = Path(args.path).resolve()
+    if not path.is_file():
+        print("VALIDATION_STATUS=FAIL")
+        print(f"FAIL: file not found: {path}")
+        return 1
+
+    failures, warnings = validate_text(
+        path.read_text(encoding="utf-8"), args.max_placeholders
+    )
     status = "PASS" if not failures else "FAIL"
     print(f"VALIDATION_STATUS={status}")
     print(f"FILE={path}")

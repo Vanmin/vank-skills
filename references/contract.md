@@ -15,7 +15,11 @@ live checkpoint.
 | `./vank/context\|specs\|decisions\|status/` | Optional commit | Stable product constraints the team wants in the repo. |
 
 Long-running resume lives in **one** file: `./vk/work/checkpoint.md`.
-Do not duplicate "current status" under `./vank/status/`.
+Do not duplicate live execution checkpoints under `./vank/status/`.
+Canonical requirements own feature/acceptance status; canonical reviews own
+finding status. The checkpoint links to them, without copying their ledgers.
+Follow [document lifecycle](../shared/document-lifecycle.md) for revisions,
+iterations, completion, acceptance, and repair history.
 
 ## Context layers
 

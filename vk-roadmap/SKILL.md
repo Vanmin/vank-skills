@@ -33,7 +33,11 @@ Lock these before acting:
 
 Default file:
 
-- `./vk/roadmap/roadmap-YYYYMMDD-HHMMSS.md`
+- `./vk/roadmap/roadmap-<scope-slug>.md`; reuse the existing canonical path
+  for the same target and analysis goal, including legacy timestamped files.
+- Maintain revision, current scope/baseline, updated time, and change history
+  per [document lifecycle](../shared/document-lifecycle.md). A repeat analysis
+  updates the same document; distinguish a delivery iteration from a revision.
 
 Suggested structure:
 
@@ -82,7 +86,9 @@ If a global `AGENTS.md` exists, write a short summary into:
 ### Step 5: Write docs
 
 - Create `./vk/roadmap/` under the target.
-- Filename `roadmap-YYYYMMDD-HHMMSS.md`.
+- Resolve the existing roadmap before creating one; use the stable scope
+  filename above only for a new matter. Update current content and history
+  together; do not create a timestamped replacement on every invocation.
 - Before write: migrate legacy `vk-*` record dirs per the shared contract; `.gitignore` covers `vk/` and `vk-*/`.
 - If `vk/` was staged: `git restore --staged -- vk/`.
 

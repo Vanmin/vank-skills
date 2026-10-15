@@ -116,6 +116,14 @@ package. Vank does not create a record merely because a skill ran:
   and trivial verified edits.
 - Requested files such as a roadmap, DSL, or article are direct deliverables,
   not extra execution records.
+- Durable documents use stable matter IDs/paths, in-place revisions, and
+  append-only change history. Delivery iterations are explicit; rerunning
+  a skill does not create a new version. Existing project requirement files
+  remain authoritative.
+- Functional changes, completion, and acceptance must update the requirement
+  and affected feature states. Completed pending acceptance and accepted are
+  distinct. Review findings retain IDs, repair history, and verification
+  status across runs. See [document lifecycle](shared/document-lifecycle.md).
 
 Optional committed product context: `./vank/context|specs|decisions/`.
 Do not duplicate live status there. See [references/contract.md](references/contract.md).

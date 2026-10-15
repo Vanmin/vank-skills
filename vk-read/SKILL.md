@@ -134,6 +134,11 @@ Step 8: Important Reading Summary & Local Documentation
   ./vk/read/READ_SUMMARY_<slug>.md
 
 - Use an English slug unless the user asked otherwise.
+- Resolve an existing summary for the same target and reading goal before
+  writing. Preserve its path; update current conclusions, baseline,
+  revision/time, and change history per
+  [document lifecycle](../shared/document-lifecycle.md). Repeated reads do
+  not create competing summaries or erase earlier unresolved questions.
 
 - A warranted summary document MUST include:
   - Project purpose and problem domain

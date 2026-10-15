@@ -40,6 +40,12 @@ REQUIRED FLOW
    submission, a material safety finding, an explicit handoff, or a
    user-requested audit trail is record-worthy; a clean no-commit rehearsal is
    not.
+   Before submission, confirm required requirement/review synchronization:
+   current scope and feature states, revisions/history, repair verification,
+   and actual acceptance evidence. Follow
+   [document lifecycle](../shared/document-lifecycle.md). Commit/push does
+   not imply acceptance. Reuse the same submission record for retries of
+   this submission, passing its existing `--record-file` explicitly.
 
 2. Only when record-worthy, run local record migration first. Resolve the
    script from this skill directory, not from a flattened host path:
@@ -91,6 +97,8 @@ run `git add` and print success only after `git push` returns 0.
    - pre/post git status summary
    - scope-check output
    - local artifact paths
+   - canonical requirement/review paths, revisions, iteration/status, and
+     remaining unverified or pending acceptance work
 
 ================================================================================
 

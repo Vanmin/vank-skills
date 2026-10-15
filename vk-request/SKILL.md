@@ -63,7 +63,11 @@ description: Compress natural-language intent into a structured prompt DSL align
 - Defer `PHASE_2_*`, `PHASE_N_NAME`, non-critical Custom Agents, and defaultable status fields.
 6. Reuse compression patterns from [references/examples.md](references/examples.md).
 7. Reply order: Summary card, Request summary, Key assumptions, Prompt DSL, Document path (or `inline — not saved`), Validation, Auto-evolution.
-8. Persist only when the user asked for a durable file, or the DSL is a cross-session handoff. Then:
+8. Persist a new DSL only when the user asked for a durable file, or it is a
+cross-session handoff. Always synchronize an existing requirement when its
+scope, feature behavior, implementation, or acceptance status changes, per
+[document lifecycle](../shared/document-lifecycle.md). Resolve its canonical
+path/ID before writing. For a new matter:
 
 ```bash
 python3 vk-request/scripts/save_request_doc.py \
@@ -71,7 +75,27 @@ python3 vk-request/scripts/save_request_doc.py \
   --source-request "<raw user request>"
 ```
 
-Pipe the full result on stdin. Prefer updating an existing `./vk/request/` file for the same task instead of creating a new one.
+Pipe the current DSL body on stdin, excluding frontmatter and managed
+history. To update a resolved existing local DSL:
+
+```bash
+python3 vk-request/scripts/save_request_doc.py \
+  --path "vk/request/<existing-file>.md" \
+  --expected-revision 1 \
+  --change-summary "<reason and concrete changes>" \
+  --status in_progress
+```
+
+Alternatively use `--task-id REQ-001`. Supply the revision from the last
+read with `--expected-revision` (legacy unversioned files start at 1); a
+stale update is rejected. The helper preserves the path,
+creation time, original request, unknown metadata, and existing history;
+it adds a revision and a body diff for a meaningful update. An unchanged
+save is a no-op. Same-title candidates require an explicit path/ID; title
+similarity must not silently merge matters. Use `--new` only after resolving
+that a same-title task is independent. Existing product requirement files
+outside `vk/request/` are updated directly in their native format, not
+copied into a competing DSL.
 9. Validate the DSL text before treating it as final. If a file was written, run:
 
 ```bash
@@ -103,9 +127,23 @@ If the result stayed inline, validate against the same rules in-memory or via a 
 ## Persistence (when a durable file is requested)
 
 - Directory: `./vk/request/`
-- Filename: `request-YYYYMMDD-HHMMSS-<slug>.md`
-- `slug` from title, else `untitled`
-- Frontmatter must include `title`, `created_at`, `source_request`, `template_version`
+- New filename: `REQ-<number>-<slug>.md`; preserve existing paths on update.
+- Frontmatter includes `task_id`, `title`, `revision`, `iteration`, `status`,
+  `created_at`, `updated_at`, `source_request`, and `template_version`.
+- Keep current feature items, criteria, implementation/acceptance status,
+  evidence, and iteration scope within the existing DSL fields. Use
+  `GLOBAL STATE`, `PHASE STRATEGY`, `VALIDATION SYSTEM`, and `SUCCESS CRITERIA`;
+  do not invent extra DSL chapters. The helper appends document history
+  outside the DSL, leaving chapters 0 through 14 intact.
+- Completion: update affected items and aggregate status; use
+  `--status completed_pending_acceptance --evidence "<checks and baseline>"`
+  only after required checks pass. Acceptance: use `--status accepted
+  --acceptance-evidence "<user or agreed mechanism, scope, time, result>"`.
+  A submit request or successful tests alone do not establish acceptance.
+- On a delivery iteration change, retain previous iteration/acceptance
+  records in the body and use `--iteration I02 --iteration-summary
+  "<goal, scope delta, criteria, relationship>"`. This is distinct from a
+  document revision. Reopen affected accepted features when behavior changes.
 - Save the structured result itself. Do not write a second summary.
 
 ## Git hygiene (when a durable file was created)
