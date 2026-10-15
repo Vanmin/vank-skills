@@ -50,7 +50,10 @@ reproducible and in scope → re-check.
 Control decision is exactly one of: continue, repair, broaden
 verification, redesign, escalate.
 
-Stop blind loops if the same failure repeats without narrowing.
+Apply `../../shared/verification-policy.md`: stop when the same failure
+repeats without narrowing; default to at most two automatic repairs per
+same issue/root cause across skills/sessions. Preserve attempts/evidence
+and report the blocker/next decision at the limit.
 
 ## 6. Readability
 
@@ -61,7 +64,8 @@ when present. Missing Vank helper scripts must not block completion.
 
 Enter `testing` only when required implementation is complete and each
 required criterion has a test case. Record the tested commit/dirty baseline.
-Run repo-native tests/lint/build for the slice. Then apply
+Choose reuse/targeted/broader from changed scope, risk, and earlier evidence.
+Run only necessary repo-native tests/lint/build for the slice. Then apply
 `verification-matrix.md` rows that match the diff.
 
 Distinguish compile evidence, targeted tests, broadened regression, and
@@ -71,6 +75,9 @@ do not replace earlier failures. Run the lifecycle acceptance-readiness gate.
 For any failure, record/link the same issue, repair or confirm a scope change,
 then retest before accepting the affected criteria. Explicitly track untested,
 failed, and blocked items; compiler/lint success alone is not functional proof.
+Passing sufficient checks ends verification for that scope. A new full
+review/suite requires changed behavior, a new failure/risk, explicit scope,
+or a project-required check; a phase transition alone is insufficient.
 
 ## 7.1 Acceptance and closure
 

@@ -52,6 +52,9 @@ REQUIRED FLOW
    Submission may occur while acceptance is pending when authorized; do not
    mark accepted/completed to permit a commit. Claim lifecycle completion
    only after the separate `completed` gate passes.
+   Apply [verification policy](../shared/verification-policy.md): submission
+   alone does not trigger a new full review/test run. Reuse applicable
+   evidence and check only changes since the last verified baseline.
 
 2. Only when record-worthy, run local record migration first. Resolve the
    script from this skill directory, not from a flattened host path:

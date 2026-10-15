@@ -41,6 +41,10 @@ description: Compress natural-language intent into a structured prompt DSL align
 - Even when multi-agent orchestration is a poor fit, emit the same DSL and minimize unused agents/pipelines.
 - Do not emit generic advice. Emit a savable DSL.
 - Do not leave `<<PLACEHOLDER>>` in the final result.
+- Apply [verification policy](../shared/verification-policy.md): encode
+  bounded repairs and evidence-based reuse/targeted/broader verification in
+  existing execution/failure/constraint fields. Do not emit an unbounded
+  controller loop or require full review after every slice.
 - Use one missing-field policy per field class. Do not mix blanks, guesses, `TBD`, and `ASSUMPTION:` for the same class.
 - Default to the smallest executable DSL. Do not start with a questioning round.
 

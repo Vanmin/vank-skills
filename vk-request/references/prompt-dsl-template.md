@@ -83,7 +83,7 @@ no global mutable state
 
 Controller loop:
 
-while not finished:
+while not finished and within_finite_task_scope():
 
     analyze(GLOBAL_STATE)
 
@@ -93,7 +93,12 @@ while not finished:
 
     result = execute(task)
 
-    if not validate(result):
+    checks = choose_sufficient_checks(task, changed_scope, prior_evidence)
+
+    if not validate(result, checks):
+        if repair_limit_reached() or no_progress() or external_blocker():
+            record_issue_evidence_and_next_decision()
+            break
         handle_failure(task)
         continue
 
@@ -299,7 +304,13 @@ Identify root cause
 
 Attempt minimal fix
 
-Re-run validation
+Re-run affected validation only; reuse valid unaffected evidence
+
+Default: at most two automatic repair attempts per same issue/root cause
+
+Stop earlier on no progress or an external blocker; preserve the counter across skills and sessions
+
+After sufficient checks pass, hand off; broader verification needs a concrete changed risk or required project check
 
 If still failing:
 
@@ -319,6 +330,10 @@ DO NOT:
 ignore failure
 
 continue pipeline blindly
+
+reset retry limits by switching tools, reviewers, or sessions
+
+repeat full review/test cycles without changed scope or new evidence
 
 11. CONSTRAINT SYSTEM
 

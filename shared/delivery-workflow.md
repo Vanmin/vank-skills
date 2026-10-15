@@ -6,6 +6,9 @@ execution/testing/retesting and records acceptance only when authorized.
 `vk-request` maintains scope/criteria; `vk-review` analyzes findings;
 `vk-submit` handles authorized submission independently of product acceptance.
 Do not create separate competing documents or a new skill for each phase.
+Apply [verification policy](verification-policy.md): phase transitions are
+recorded gates, not instructions to restart all reviews/tests. Reuse valid
+evidence, target affected criteria, and expand only for an identified risk.
 
 ## One requirement, one traceable ledger
 
@@ -111,7 +114,10 @@ required accepted scope; do not silently lower requirements to pass.
    acceptance after the issue handling; earlier acceptance remains in history.
    Unaffected feature acceptance is retained when its scope is unchanged.
    A failed or blocked acceptance cannot be replaced by developer judgment.
-6. Repeated failure follows the same loop and same records. `deferred`
+6. Repeated failure uses the same records within the finite repair limit;
+   it does not mandate unlimited retries. Stop at the limit/no-progress
+   condition and record the blocker/next decision. Reopen only affected
+   criteria, retaining applicable evidence for unchanged features. `deferred`
    blocking issues prevent progression. `not_applicable` needs a documented
    reason/decision; removing scope requires the approved requirement change.
 

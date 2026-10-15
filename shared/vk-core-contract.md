@@ -53,6 +53,11 @@
   acceptance attempts in the canonical requirement. Run the lifecycle gate
   checker before phase handoff and before declaring delivery complete;
   unresolved blocking issues or missing/stale required evidence prevent it.
+- Apply [verification policy](verification-policy.md) before repeated review,
+  tests, or repair: choose reuse/targeted/broader from scope and evidence.
+  No routine full-process reruns. Default to at most two automatic repairs
+  per same issue/root cause, stop earlier without progress, and preserve
+  counts across skills/sessions. Waiting for acceptance is a handoff.
 - If the target project still has legacy `vk-xxx/` record directories, migrate before writing:
 
 ```bash

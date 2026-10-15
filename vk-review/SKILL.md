@@ -117,6 +117,12 @@ OUTPUT RULES
   artifacts; link it from the single canonical review rather than treating
   each baseline summary as a replacement review.
 - Keep claims evidence-based. Do not speculate without marking assumptions.
+- Apply [verification policy](../shared/verification-policy.md): one review
+  pass per scope by default. Recheck affected changes/findings/regressions;
+  reuse unrelated valid conclusions and mark old findings `not rechecked`
+  where appropriate. Broaden only for a specific new risk or explicit scope.
+  Do not restart full reviews or auto-fix unrelated suggestions into another
+  review cycle. Carry the issue's repair count/stop condition across handoffs.
 - If a review artifact is generated, report its path under `./vk/review/`.
 
 ================================================================================

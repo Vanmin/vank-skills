@@ -7,6 +7,10 @@ only where it has a real advantage.
 
 Do not load this file for a trivial edit. Do not load it merely because
 gstack is installed.
+Apply [verification policy](../shared/verification-policy.md): invoke a
+specialist only for a concrete unresolved question. Reuse a valid prior
+result when relevant scope is unchanged; do not chain specialists/reviews
+for reassurance or reset repair limits by switching tools.
 
 ## Ownership
 

@@ -27,6 +27,20 @@ Do not load `vk-restrict` for copy, rename, pure frontend, or a tiny patch that 
 
 Do not load `../references/gstack-bridge.md` until local verification finished, the class is not `trivial`, and a bridge entry criterion matches.
 
+## Verification decisions
+
+Before expensive/repeated verification, apply
+[verification policy](../shared/verification-policy.md): choose reuse,
+targeted, or broader from actual changes, risk, and prior evidence. Do not
+restart the full delivery/review flow for every edit/handoff/submission.
+After sufficient checks pass, stop verifying and hand off. Read current
+state/affected findings first; retrieve old history only when needed.
+
+Default to at most two automatic repairs per same issue/root cause across
+skills/sessions; stop earlier without evidence or narrowing. Keep its count
+in the existing issue/checkpoint. At the limit, report the blocker and next
+decision instead of another repair/review chain. Required checks remain.
+
 ## Language references
 
 Paths are **relative to this skill directory** (`vk-work/`), not

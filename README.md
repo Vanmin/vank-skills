@@ -130,6 +130,10 @@ package. Vank does not create a record merely because a skill ran:
   work loops through repair/scope adjustment and reacceptance. The
   [delivery workflow](shared/delivery-workflow.md) includes a runnable phase
   checker. Submission does not imply acceptance or lifecycle completion.
+- Verification is proportional: reuse valid evidence, check affected scope,
+  and broaden only for a concrete risk. Default to two automatic repairs
+  per same issue across sessions/tools, stopping earlier without progress.
+  See [verification policy](shared/verification-policy.md).
 
 Optional committed product context: `./vank/context|specs|decisions/`.
 Do not duplicate live status there. See [references/contract.md](references/contract.md).
