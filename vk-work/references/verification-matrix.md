@@ -7,6 +7,12 @@ Pick rows that match the diff. Language-native tools come from the repo
 (`go test`, `pytest`, linters). A passing schema or lint check is not
 evidence for the rows below.
 
+For every functional task, also apply `../../shared/delivery-workflow.md`:
+map required criteria to test cases, append individual runs/results with
+baseline/scope versions, and record failed/blocked checks as linked issues.
+These risk-specific rows supplement criterion coverage; they do not replace
+the required test -> acceptance -> closure gates.
+
 | Change type | Evidence to collect |
 | --- | --- |
 | Database transaction | Rollback on failure; unique constraint conflict; concurrent update (lost update or version) |

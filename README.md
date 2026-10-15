@@ -124,6 +124,12 @@ package. Vank does not create a record merely because a skill ran:
   and affected feature states. Completed pending acceptance and accepted are
   distinct. Review findings retain IDs, repair history, and verification
   status across runs. See [document lifecycle](shared/document-lifecycle.md).
+- Functional delivery follows confirmation -> development -> testing ->
+  acceptance -> completion. The canonical requirement links criteria to
+  test runs, issues, repair/retest evidence, and acceptance attempts; failed
+  work loops through repair/scope adjustment and reacceptance. The
+  [delivery workflow](shared/delivery-workflow.md) includes a runnable phase
+  checker. Submission does not imply acceptance or lifecycle completion.
 
 Optional committed product context: `./vank/context|specs|decisions/`.
 Do not duplicate live status there. See [references/contract.md](references/contract.md).

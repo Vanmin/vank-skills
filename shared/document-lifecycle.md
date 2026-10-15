@@ -63,6 +63,10 @@ explicit preservation request.
 
 ## Requirement and feature status
 
+For complete stage gates, traceable tests, and the failure/retest/reacceptance
+loop, also read [delivery workflow](delivery-workflow.md). Keep its ledger
+inside the canonical requirement, without a competing status document.
+
 Use these states, or map them clearly to the project's existing vocabulary:
 
 | State | Meaning / transition evidence |
@@ -70,8 +74,10 @@ Use these states, or map them clearly to the project's existing vocabulary:
 | `awaiting_confirmation` | Scope or criteria need confirmation |
 | `ready` | Current scope is agreed and ready to implement |
 | `in_progress` | Implementation is underway |
+| `testing` | Required implementation complete; criterion-linked tests and tested baseline recorded |
 | `completed_pending_acceptance` | Implementation and required verification passed; record results |
 | `accepted` | User explicitly accepted, or an agreed acceptance mechanism passed; record who/mechanism, scope, time, result |
+| `completed` | Acceptance passed and final document/issue/remaining-work closure check recorded |
 | `blocked`, `deferred`, `cancelled` | Record reason and remaining work or resumption condition |
 
 - Track status for the overall requirement/current iteration and individual
@@ -87,8 +93,8 @@ Use these states, or map them clearly to the project's existing vocabulary:
   affected feature, linking the stable review finding for details. Pure
   internal changes need not invent a product requirement.
 - On implementation completion, record actual behavior, evidence, baseline,
-  and remaining gaps; set `completed_pending_acceptance` only when required
-  checks passed. Commit/push, a clean review, and developer tests do not by
+  and remaining gaps, then enter `testing`; set `completed_pending_acceptance`
+  only when required checks passed. Commit/push, a clean review, and developer tests do not by
   themselves constitute product acceptance.
 - On acceptance, update the requirement and feature states immediately in
   that task. Never infer acceptance merely from silence, a code change, or
@@ -123,10 +129,11 @@ Use these states, or map them clearly to the project's existing vocabulary:
 - Evidence identifies scope, date, commit, and dirty-worktree fingerprint
   or diff summary when applicable. Keep historical evidence after code
   changes, but do not present it as verification of the current baseline.
-- `vk-work` writes repair details/status back to the canonical review and
-  affected requirement. `vk-review` writes recheck results to the same
-  finding and synchronizes affected requirement status/evidence. Review
-  resolution is not automatic product acceptance.
+- `vk-work` and `vk-review` write repair/recheck details to the canonical
+  review and update the linked issue/criterion entries in the requirement's
+  delivery ledger. The ledger owns the current closure state; review prose
+  links it instead of maintaining an independent conflicting state table.
+  Review resolution is not automatic product acceptance.
 
 ## Safe updates and legacy documents
 

@@ -46,6 +46,13 @@
   Pure internal edits without a functional/requirement change still follow
   the selective-record policy. Never mark implementation as accepted without
   explicit acceptance or a previously agreed acceptance mechanism.
+- Functional delivery follows [delivery workflow](delivery-workflow.md):
+  confirmation -> development -> testing -> acceptance -> completion.
+  In any phase, record problems in the same matter, repair or update scope,
+  retest, then reaccept affected criteria. Keep criterion-linked test and
+  acceptance attempts in the canonical requirement. Run the lifecycle gate
+  checker before phase handoff and before declaring delivery complete;
+  unresolved blocking issues or missing/stale required evidence prevent it.
 - If the target project still has legacy `vk-xxx/` record directories, migrate before writing:
 
 ```bash

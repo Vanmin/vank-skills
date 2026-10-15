@@ -14,12 +14,10 @@ from datetime import datetime
 from pathlib import Path
 
 from validate_request_doc import HISTORY_END, HISTORY_START, validate_text
+from check_delivery_lifecycle import STAGES, check_document, extract, replace
 
 DEFAULT_TEMPLATE_VERSION = "MULTI-AGENT CODING ORCHESTRATION TEMPLATE V3-FINAL"
-STATUSES = (
-    "awaiting_confirmation", "ready", "in_progress",
-    "completed_pending_acceptance", "accepted", "blocked", "deferred", "cancelled",
-)
+STATUSES = STAGES
 
 
 def slugify(value: str) -> str:
@@ -90,6 +88,8 @@ def original_request(fields: dict[str, str]) -> str:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo-root", default=".")
+    parser.add_argument("--format", choices=("dsl", "requirement"), default="dsl",
+                        help="Use requirement for a native concise requirement with an embedded lifecycle ledger.")
     parser.add_argument("--path", help="Existing canonical DSL path, relative to repo root or absolute.")
     parser.add_argument("--task-id", help="Stable matter ID, e.g. REQ-001; resolves an existing file first.")
     parser.add_argument("--new", action="store_true", help="Explicitly create an independent same-title matter.")
@@ -176,7 +176,20 @@ def save(args: argparse.Namespace, content: str, directory: Path) -> Path:
     status = args.status or ("awaiting_confirmation" if new_iteration else old_status)
     if status not in STATUSES:
         raise ValueError("legacy status is unknown; supply --status after inspecting the document")
-    if original is not None and old_status == "accepted" and content != old_body and not args.status and not new_iteration:
+    ledger = extract(content)
+    old_ledger = extract(old_body)
+    if old_ledger is not None and ledger is None:
+        raise ValueError("cannot remove the lifecycle ledger from an existing requirement")
+    if ledger is not None:
+        ledger["status"] = status
+        content = replace(content, ledger)
+        failures = check_document(content, status=status, task_id=task_id,
+                                  iteration=iteration, previous=old_ledger)
+        if failures:
+            raise ValueError("delivery gate failed: " + "; ".join(failures))
+    elif status not in ("awaiting_confirmation", "blocked", "deferred", "cancelled"):
+        raise ValueError("delivery gate requires a lifecycle ledger before confirmation/development/testing/acceptance/completion")
+    if original is not None and old_status in ("accepted", "completed") and content != old_body and not args.status and not new_iteration:
         raise ValueError("accepted content changed; explicitly reopen affected scope with --status or record fresh acceptance")
     entering_completion = status == "completed_pending_acceptance" and (old_status != status or new_iteration or content != old_body)
     if entering_completion and not (args.evidence and args.evidence.strip()):
@@ -230,9 +243,10 @@ def save(args: argparse.Namespace, content: str, directory: Path) -> Path:
     history = (history + "\n\n" + entry).strip()
     rendered = "---\n" + "".join(fields.values()) + "---\n\n" + content + "\n\n" + HISTORY_START + "\n" + history + "\n" + HISTORY_END + "\n"
     read_document(rendered)  # Reject input that would corrupt the history envelope.
-    failures, _ = validate_text(rendered)
+    failures, _ = validate_text(rendered) if args.format == "dsl" else (check_document(
+        rendered, status=status, task_id=task_id, iteration=iteration), [])
     if failures:
-        raise ValueError("invalid current DSL: " + "; ".join(failures))
+        raise ValueError("invalid current document: " + "; ".join(failures))
     fd, temporary = tempfile.mkstemp(prefix=".request-", suffix=".tmp", dir=directory)
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as stream:
@@ -251,7 +265,7 @@ def save(args: argparse.Namespace, content: str, directory: Path) -> Path:
 def main() -> int:
     args = parse_args()
     content = sys.stdin.read().strip()
-    failures, _ = validate_text(content)
+    failures, _ = validate_text(content) if args.format == "dsl" else ([], [])
     if not content or content.startswith("---\n") or HISTORY_START in content or HISTORY_END in content:
         print("error: stdin must contain only the current DSL body, without frontmatter/history", file=sys.stderr)
         return 1

@@ -1,6 +1,6 @@
 ---
 name: vk-work
-description: Long-running project implementation with strict scope, backend gates, verification loops, and optional gstack QA or release handoffs.
+description: Implement project changes, run tests and retests, handle acceptance and feedback, and close delivery with scoped verification gates and optional gstack QA or release handoffs.
 ---
 
 You are an execution-oriented assistant for professional software engineering tasks.
@@ -59,7 +59,11 @@ accepted.
 
 1. **Scope lock** — in and out of scope; git baseline (`status`, `diff`, `diff --cached`); isolate unrelated dirty files.
 2. **Implement** — production code in the locked files; short cycles; no speculative refactors.
-3. **Verify** — repo tests/lint/build for the slice; then only the matching rows in `references/verification-matrix.md` when that file was loaded.
+3. **Test and accept** — enter `testing` when required implementation is
+   ready. Map tests to required criteria, execute repo-native checks, and
+   record passes/failures/blocked checks and exact baseline. Only passing
+   required tests permit acceptance. Record actual user/agreed acceptance;
+   failures return through repair -> retest -> reacceptance.
 4. **Synchronize and hand off** — update the canonical requirement and
    linked review before declaring completion; extra summaries only if
    warranted; `vk-submit` only when the user asked to commit.
@@ -76,14 +80,24 @@ Do not add frameworks or mix frontend/backend paradigms. Follow the repo.
   requirement/review first; update current content, affected feature items,
   criteria, status, revision, and history in place. Log adjustments from any
   source, including implementation decisions and acceptance feedback.
+- Follow [delivery workflow](../shared/delivery-workflow.md) for every
+  functional task, including test-only and acceptance-feedback requests.
+  Keep its ledger in the existing requirement; attach it before development.
+  Gate handoffs with `../vk-request/scripts/check_delivery_lifecycle.py`.
+  Native project requirements stay canonical; use their equivalent checker
+  only with explicit mapping to all required gates.
 - For a functional change without a requirement file, create a concise
   requirement in `./vk/request/`; do not force a full DSL. Internal-only
   edits without functional change remain subject to selective records.
-- Start work with affected items `in_progress`. Once implementation and
-  required checks pass, record actual behavior/evidence and mark them
+- Start authorized work with affected items `in_progress` after scope
+  confirmation. Enter `testing` when implementation is ready. Once required
+  criterion-linked checks pass, record actual behavior/evidence and mark them
   `completed_pending_acceptance`. Mark `accepted` only on explicit user
   acceptance or a previously agreed acceptance mechanism; record its scope,
   time, and result. Partial completion must remain visible in aggregate status.
+- Then mark `completed` only after the acceptance gate and final requirement,
+  review, issue, and remaining-work synchronization check. Keep pending or
+  failed acceptance visible even if implementation was committed/pushed.
 - Preserve previous acceptance on later changes; reopen only affected items
   and record delivery iterations explicitly. Update linked findings with
   repair details and verification, never treating code edits as proof of a fix.

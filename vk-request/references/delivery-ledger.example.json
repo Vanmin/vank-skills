@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "task_id": "REQ-001",
+  "iteration": "I01",
+  "status": "awaiting_confirmation",
+  "baseline": "",
+  "confirmation": {},
+  "features": [
+    {
+      "id": "FEAT-001",
+      "title": "Purchase an item",
+      "revision": 1,
+      "required": true,
+      "implementation": "pending",
+      "implementation_evidence": "",
+      "criteria": [
+        {
+          "id": "AC-001",
+          "description": "A successful purchase creates exactly one order and charge",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "id": "TC-001",
+      "run_id": "TC-001-plan",
+      "criteria": ["AC-001"],
+      "scope_versions": {"FEAT-001": 1},
+      "required": true,
+      "status": "not_run"
+    }
+  ],
+  "issues": [],
+  "acceptance": [],
+  "events": [
+    {
+      "status": "awaiting_confirmation",
+      "at": "2026-10-15T10:00:00+08:00",
+      "evidence": "Draft scope and criterion recorded for confirmation"
+    }
+  ]
+}

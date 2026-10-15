@@ -88,6 +88,14 @@ bash scripts/vk-review_baseline.sh --mode quick
 8. Summarize new findings separately from unresolved historical findings,
    with file references and concrete failure modes. A clean review does
    not establish product acceptance.
+9. For functional delivery, follow
+   [delivery workflow](../shared/delivery-workflow.md): link findings to
+   affected criterion IDs and the requirement's issue ledger. Test/acceptance
+   failures remain recorded across repairs; verified resolution names exact
+   passing retest runs after repair. Update current closure state in that
+   ledger, linking review analysis instead of maintaining competing status.
+   Check the phase gate; unresolved blocking findings prevent acceptance
+   readiness. Do not treat review approval as user acceptance.
 
 ================================================================================
 

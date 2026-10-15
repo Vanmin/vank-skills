@@ -14,6 +14,7 @@ improvise from this table.
 | Turn intent into an executable DSL / spec | `vk-request/SKILL.md` | DSL under `./vk/request/` |
 | Backend design: DB, cache, RPC, MQ, lock, To-C | `vk-restrict/SKILL.md` | Three-axis constraints |
 | Implement, fix, refactor, long-running delivery | `vk-work/SKILL.md` | Scoped change + `./vk/work/` record |
+| Test, retest, process acceptance or acceptance feedback | `vk-work/SKILL.md` | Updated canonical requirement ledger and phase gate result |
 | Review a diff, risk, regression | `vk-review/SKILL.md` | Findings and verdict |
 | Prepare commit, push, `vkpush` | `vk-submit/SKILL.md` | Scope-checked handoff |
 | WeChat / long-form article package | `vk-writer/SKILL.md` | Outline, style, draft |
@@ -36,6 +37,13 @@ question/read/roadmap → request → restrict → work → review → submit
 
 Specialists (`vk-writer`, `vk-ios-agents`, `vk-diagram-guard`,
 `vk-write-lark`) are additive only when that domain is present.
+
+For functional work the delivery stages are confirmation -> development ->
+testing -> acceptance -> completion, owned by `vk-work` with the canonical
+requirement ledger. Problems in any stage return through recorded repair or
+scope adjustment -> retesting -> reacceptance. See
+[delivery workflow](../shared/delivery-workflow.md). Skill invocation order
+does not itself prove delivery completion; submission is independent.
 
 ## gstack bridge for implementation
 

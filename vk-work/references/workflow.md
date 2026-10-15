@@ -9,6 +9,9 @@ Follow internally in order. Do not dump this file into the user reply.
 
 Restate the task. Split into executable sub-tasks. Name in-scope and
 out-of-scope. Classify `trivial` | `standard` | `high-risk` | `long-running`.
+For functional work, resolve the canonical requirement and ledger. Confirm
+scope/criteria against existing user authorization before entering development;
+read `../../shared/delivery-workflow.md`. Do not ask for redundant approval.
 
 ## 1. Responsibility
 
@@ -56,11 +59,29 @@ when present. Missing Vank helper scripts must not block completion.
 
 ## 7. Verification
 
+Enter `testing` only when required implementation is complete and each
+required criterion has a test case. Record the tested commit/dirty baseline.
 Run repo-native tests/lint/build for the slice. Then apply
 `verification-matrix.md` rows that match the diff.
 
 Distinguish compile evidence, targeted tests, broadened regression, and
 blocked checks. Failed required checks mean the task is not complete.
+Append individual test attempts/results to the canonical requirement ledger;
+do not replace earlier failures. Run the lifecycle acceptance-readiness gate.
+For any failure, record/link the same issue, repair or confirm a scope change,
+then retest before accepting the affected criteria. Explicitly track untested,
+failed, and blocked items; compiler/lint success alone is not functional proof.
+
+## 7.1 Acceptance and closure
+
+When all required tests pass and blocking issues are resolved, enter
+`completed_pending_acceptance`. Check every required criterion against actual
+user acceptance or the agreed mechanism. Record partial/failing/blocked
+attempts; failures return to development/confirmation, then testing and
+reacceptance. Mark `accepted` only when all required criteria passed.
+Run the `completed` gate after final requirement/review synchronization and
+residual-work checks, record closure, then mark `completed`. A code-complete
+handoff awaiting the user is reported as pending acceptance, not full closure.
 
 ## 8. Synchronize documents and apply git hygiene
 

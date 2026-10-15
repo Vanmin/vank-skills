@@ -16,8 +16,9 @@ live checkpoint.
 
 Long-running resume lives in **one** file: `./vk/work/checkpoint.md`.
 Do not duplicate live execution checkpoints under `./vank/status/`.
-Canonical requirements own feature/acceptance status; canonical reviews own
-finding status. The checkpoint links to them, without copying their ledgers.
+Canonical requirements own the delivery/test/acceptance/issue closure ledger;
+canonical reviews own finding analysis and repair details and link the same
+issue IDs. The checkpoint links to them, without copying their ledgers.
 Follow [document lifecycle](../shared/document-lifecycle.md) for revisions,
 iterations, completion, acceptance, and repair history.
 

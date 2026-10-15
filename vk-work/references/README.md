@@ -7,6 +7,7 @@ Load files from **this directory** (the `vk-work` skill folder), never from
 | --- | --- |
 | `verification-matrix.md` | `standard` or `high-risk` backend behavior change |
 | `workflow.md` | `standard` or `high-risk` (detailed steps) |
+| `../../shared/delivery-workflow.md` | Functional delivery, tests/retests, acceptance feedback, phase handoff |
 | `long-running.md` | Multi-module / multi-cycle / user asked for subagents |
 | `{language}/README.md` | That file exists next to this index (`swift/README.md` for Apple) |
 

@@ -126,6 +126,16 @@ If the result stayed inline, validate against the same rules in-memory or via a 
 
 ## Persistence (when a durable file is requested)
 
+- Follow [delivery workflow](../shared/delivery-workflow.md). Assign stable
+  feature/criterion IDs and attach its ledger before confirmed scope enters
+  development. Preserve test/acceptance attempts and issue histories in this
+  same document, outside DSL chapters 0 through 14. The save helper checks
+  phase gates and append-only history before writing. For concise native
+  requirements use `--format requirement`; do not force DSL conversion.
+- Sequence: awaiting_confirmation -> ready -> in_progress -> testing ->
+  completed_pending_acceptance -> accepted -> completed. Append a workflow
+  event on each handoff. Failure returns to repair/scope confirmation, then
+  retest and reacceptance; no stage skipping or automatic acceptance.
 - Directory: `./vk/request/`
 - New filename: `REQ-<number>-<slug>.md`; preserve existing paths on update.
 - Frontmatter includes `task_id`, `title`, `revision`, `iteration`, `status`,

@@ -13,6 +13,8 @@ SKILL = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SKILL / "scripts"))
 from save_request_doc import read_document, scalar
 from validate_request_doc import HISTORY_START, validate_text
+from check_delivery_lifecycle import extract
+from delivery_fixtures import advance, block, sample
 
 TEMPLATE = (SKILL / "references" / "prompt-dsl-template.md").read_text(encoding="utf-8")
 BODY = re.sub(r"<<[^>\n]+>>", "TBD", TEMPLATE).strip()
@@ -25,6 +27,25 @@ class DocumentLifecycleTests(unittest.TestCase):
         self.root = Path(self.temporary.name)
 
     def invoke(self, *args, body=BODY, ok=True):
+        # Supply truthful synthetic workflow evidence for tests whose focus
+        # is persistence rather than the separate delivery-gate regressions.
+        existing = None
+        if "--path" in args:
+            existing = Path(args[args.index("--path") + 1])
+        elif "--task-id" in args:
+            candidates = list((self.root / "vk" / "request").glob(args[args.index("--task-id") + 1] + "-*.md"))
+            existing = candidates[0] if len(candidates) == 1 else None
+        previous = extract(existing.read_text()) if existing and existing.is_file() else None
+        target = args[args.index("--status") + 1] if "--status" in args else (previous["status"] if previous else "awaiting_confirmation")
+        iteration = args[args.index("--iteration") + 1] if "--iteration" in args else None
+        if iteration and previous and iteration != previous["iteration"] and "--status" not in args:
+            target = "awaiting_confirmation"
+        if not body.startswith("---\n") and extract(body) is None:
+            data = advance(previous, target) if previous else (sample(target) if target != "awaiting_confirmation" else None)
+            if data:
+                if iteration:
+                    data["iteration"] = iteration
+                body += "\n\n" + block(data)
         result = subprocess.run(
             [sys.executable, str(SKILL / "scripts" / "save_request_doc.py"),
              "--repo-root", str(self.root), *args],
@@ -56,7 +77,7 @@ class DocumentLifecycleTests(unittest.TestCase):
         self.assertEqual(scalar(fields, "revision"), "2")
         self.assertEqual(scalar(fields, "iteration"), "I01")
         self.assertEqual(scalar(fields, "source_request"), "Buy one item")
-        self.assertEqual(body, new_body)
+        self.assertEqual(body.split("\n<!-- vk:lifecycle:start -->", 1)[0].strip(), new_body)
         self.assertIn(original_history, history)
         self.assertIn("-TBD", history)
         self.assertIn("+Buy several items", history)
@@ -169,7 +190,7 @@ class DocumentLifecycleTests(unittest.TestCase):
                 [sys.executable, str(SKILL / "scripts" / "save_request_doc.py"),
                  "--repo-root", str(self.root), "--path", str(path), "--expected-revision", "1",
                  "--status", status, "--change-summary", f"Set {status}"],
-                input=BODY, text=True, capture_output=True,
+                input=BODY + "\n\n" + block(sample(status)), text=True, capture_output=True,
             )
         with ThreadPoolExecutor(max_workers=2) as pool:
             results = list(pool.map(write, ("in_progress", "ready")))

@@ -46,6 +46,12 @@ REQUIRED FLOW
    [document lifecycle](../shared/document-lifecycle.md). Commit/push does
    not imply acceptance. Reuse the same submission record for retries of
    this submission, passing its existing `--record-file` explicitly.
+   For functional delivery, run the canonical requirement's current gate
+   using `vk-request/scripts/check_delivery_lifecycle.py` and report its
+   actual stage. Follow [delivery workflow](../shared/delivery-workflow.md).
+   Submission may occur while acceptance is pending when authorized; do not
+   mark accepted/completed to permit a commit. Claim lifecycle completion
+   only after the separate `completed` gate passes.
 
 2. Only when record-worthy, run local record migration first. Resolve the
    script from this skill directory, not from a flattened host path:
