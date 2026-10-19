@@ -35,6 +35,7 @@ skill in full. Do not substitute the routing table for a child `SKILL.md`.
 | Repository / module map | [vk-roadmap](vk-roadmap/SKILL.md) |
 | Requirements → executable DSL | [vk-request](vk-request/SKILL.md) |
 | Backend data / IO / dependency gates | [vk-restrict](vk-restrict/SKILL.md) |
+| Backend business-layer implementation quality | [vk-backend-quality](vk-backend-quality/SKILL.md) |
 | Implement, repair, test/retest, acceptance and delivery closure | [vk-work](vk-work/SKILL.md) |
 | Diff review and risk | [vk-review](vk-review/SKILL.md) |
 | Commit, push, release handoff | [vk-submit](vk-submit/SKILL.md) |

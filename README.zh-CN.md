@@ -92,6 +92,7 @@ question / read / roadmap → request → restrict → work → review → submi
 | `vk-roadmap` | 仓库 / 模块地图 |
 | `vk-request` | 意图 → 可执行 DSL |
 | `vk-restrict` | 后端数据流 / IO / 依赖门禁 |
+| `vk-backend-quality` | 后端应用业务层实施门禁 |
 | `vk-work` | 实现、修复、长任务交付 |
 | `vk-review` | diff 审查与风险 |
 | `vk-submit` | 提交、推送、`vkpush` |

@@ -13,7 +13,7 @@ vank/
   scripts/install.sh       # scans vk-*/SKILL.md, one bundle link
 ```
 
-Children stay in this tree. Do not split them back into 13 installable
+Children stay in this tree. Do not split them back into separately installable
 packages.
 
 ## Install

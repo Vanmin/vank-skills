@@ -69,16 +69,40 @@ or To-C rules. Convert the three-axis gate into implementation constraints
 and verification items. Stop and report unhandled risks the user has not
 accepted.
 
+## Backend business-layer quality gate
+
+When the task changes a backend application's handler/transport,
+service/usecase, domain state, repository, API error mapping, transaction, or
+business side effect, load `../vk-backend-quality/SKILL.md` before editing. This
+gate runs during implementation, not only after the diff is complete.
+
+- Establish the repository's existing layer and feature-file conventions before
+  creating files.
+- Define the current use case's preconditions, state transition, domain errors,
+  transport mapping, side effects, and idempotency when applicable.
+- After each small implementation slice, run the per-slice gate and resolve
+  blocking findings before starting the next slice.
+- Run targeted service/repository/transport contract tests before testing handoff.
+
+Do not load it for simple scripts, one-off utilities, build/release scripts, test
+fixtures, pure configuration, frontend work, renames, or read-only work. A
+production worker, cron job, or message consumer qualifies when it owns or changes
+domain behavior.
+
 ## Skeleton (every class)
 
 1. **Scope lock** — in and out of scope; git baseline (`status`, `diff`, `diff --cached`); isolate unrelated dirty files.
-2. **Implement** — production code in the locked files; short cycles; no speculative refactors.
-3. **Test and accept** — enter `testing` when required implementation is
+2. **Pre-implementation contract** — for backend business-layer work, load the
+   quality gate, map the local architecture, and define the first slice's business
+   contract before writing production code.
+3. **Implement** — production code in the locked files; after each backend slice,
+   run the quality gate before continuing; no speculative refactors.
+4. **Test and accept** — enter `testing` when required implementation is
    ready. Map tests to required criteria, execute repo-native checks, and
    record passes/failures/blocked checks and exact baseline. Only passing
    required tests permit acceptance. Record actual user/agreed acceptance;
    failures return through repair -> retest -> reacceptance.
-4. **Synchronize and hand off** — update the canonical requirement and
+5. **Synchronize and hand off** — update the canonical requirement and
    linked review before declaring completion; extra summaries only if
    warranted; `vk-submit` only when the user asked to commit.
 

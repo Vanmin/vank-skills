@@ -94,6 +94,7 @@ Vank. Ordinary commits stay in `vk-submit`. gstack `qa` must not commit.
 | `vk-roadmap` | Repository or module map |
 | `vk-request` | Intent → executable DSL |
 | `vk-restrict` | Backend data / IO / dependency gates |
+| `vk-backend-quality` | Backend application business-layer implementation gate |
 | `vk-work` | Implement, repair, long-running delivery |
 | `vk-review` | Diff review and risk |
 | `vk-submit` | Commit, push, `vkpush` |

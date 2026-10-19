@@ -13,6 +13,7 @@ improvise from this table.
 | Map a repo or subdirectory | `vk-roadmap/SKILL.md` | `./vk/roadmap/` document |
 | Turn intent into an executable DSL / spec | `vk-request/SKILL.md` | DSL under `./vk/request/` |
 | Backend design: DB, cache, RPC, MQ, lock, To-C | `vk-restrict/SKILL.md` | Three-axis constraints |
+| Backend application business-layer implementation quality | `vk-backend-quality/SKILL.md` | Per-slice layer, error, type, reuse, and structure gates |
 | Implement, fix, refactor, long-running delivery | `vk-work/SKILL.md` | Scoped change + `./vk/work/` record |
 | Test, retest, process acceptance or acceptance feedback | `vk-work/SKILL.md` | Updated canonical requirement ledger and phase gate result |
 | Review a diff, risk, regression | `vk-review/SKILL.md` | Findings and verdict |
@@ -34,6 +35,10 @@ For a request with multiple intents, use this order and skip finished phases:
 ```text
 question/read/roadmap → request → restrict → work → review → submit
 ```
+
+`vk-backend-quality` is normally loaded by `vk-work` during backend application
+implementation and by `vk-review` for the final diff check. Do not route simple
+scripts or tooling changes through it.
 
 Specialists (`vk-writer`, `vk-ios-agents`, `vk-diagram-guard`,
 `vk-write-lark`) are additive only when that domain is present.

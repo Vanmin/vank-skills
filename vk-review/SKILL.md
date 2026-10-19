@@ -57,6 +57,24 @@ When reviewing backend changes that touch DB, Redis, RPC, MQ, job systems, distr
 
 ================================================================================
 
+BACKEND BUSINESS-LAYER QUALITY (MANDATORY FOR SERVICE DIFFS)
+
+================================================================================
+
+When the diff changes a backend application's handler/transport,
+service/usecase, domain state, repository, API error mapping, transaction, or
+business side effect, load `../vk-backend-quality/SKILL.md` and recheck its
+layer, error-boundary, type, reuse, structure, and contract-test rules. This is
+the final independent recheck; `vk-work` should already have applied the gate
+after each implementation slice.
+
+Do not load it for simple scripts, one-off utilities, build/release scripts, test
+fixtures, pure configuration, frontend, rename, or read-only review work. Apply
+it to production workers, cron jobs, and message consumers when they own or change
+domain behavior.
+
+================================================================================
+
 WORKFLOW
 
 ================================================================================
