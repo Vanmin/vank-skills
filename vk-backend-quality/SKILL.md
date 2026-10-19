@@ -1,6 +1,6 @@
 ---
 name: vk-backend-quality
-description: Enforce backend application service-layer quality during each code slice: layer boundaries, domain errors, stable API responses, typed finite states, reuse, structure, and contract tests. Excludes simple scripts and tooling.
+description: Enforce backend application service-layer quality during each code slice: business boundaries, readable code, cognitive complexity, typed errors and states, reuse, structure, and safe simplification. Excludes simple scripts and tooling.
 ---
 
 # vk-backend-quality
@@ -14,6 +14,8 @@ invoked.
 
 - Load `../shared/vk-core-contract.md` before acting.
 - Load `../shared/backend-business-quality.md` for the rules and severity model.
+- Load `references/code-quality-rules.md` for authoring, review, and simplification
+  guidance. Read only the sections relevant to the current code.
 - Local records go under `./vk/backend-quality/` only when the shared selective
   record policy warrants them.
 - Follow the shared result contract. Routine per-slice checks may report inline;
@@ -39,13 +41,20 @@ workflow qualifies only when it owns or changes the domain behavior described ab
 2. Before implementing a slice, state its business contract: preconditions, state
    changes, domain errors, transport mapping, side effects, and idempotency when
    relevant. Mark unknowns as `TBD` or `ASSUMPTION:`.
-3. Implement the smallest slice inside the existing architecture.
-4. Apply the per-slice gate from `../shared/backend-business-quality.md`.
-5. Fix blocking findings before starting the next slice. Keep repair scope limited
+3. Implement the smallest slice inside the existing architecture, applying the
+   relevant rules from `references/code-quality-rules.md` while writing it. Keep
+   quality decisions visible in the code and checks instead of narrating every
+   stylistic choice.
+4. Apply the per-slice business and code-quality gates from
+   `../shared/backend-business-quality.md` and the code-quality reference.
+5. Fix blocking findings and concrete repair findings before starting the next slice.
+   Keep repair scope limited
    to the current feature unless a shared boundary is demonstrably affected.
 6. Run targeted service, repository, and transport contract tests before testing
    handoff. Reuse valid evidence and broaden only for a concrete risk.
-7. Report findings with rule IDs, locations, severity, correction direction, and
+7. If the implementation needs cleanup, apply the bounded simplification procedure
+   only after targeted checks pass. Recheck the final diff and preserve behavior.
+8. Report findings with rule IDs, locations, severity, correction direction, and
    retest evidence.
 
 ## Relationship to other skills
@@ -64,6 +73,11 @@ workflow qualifies only when it owns or changes the domain behavior described ab
 - Never let services write transport status, JSON, or protocol envelopes.
 - Use a centralized mapping for domain error code, transport status, and safe message.
 - Use named types/constants for finite states and shared protocol values.
+- Keep functions linear and single-purpose; report concrete complexity or mixed
+  abstraction problems rather than enforcing arbitrary line limits.
+- Search before adding helpers, constants, mappings, or packages.
+- Keep business decisions separate from database, RPC, clock, ID, and serialization
+  side effects where practical.
 - Preserve the repository's existing file structure; do not introduce a parallel
   architecture for one feature.
 - Do not add a helper or constant solely to satisfy a style preference; tie it to

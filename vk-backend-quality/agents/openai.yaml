@@ -1,4 +1,4 @@
 interface:
   display_name: "VK Backend Quality"
-  short_description: "Gate backend business-layer code during implementation"
-  default_prompt: "Use $vk-backend-quality during implementation. Check each backend business slice for layer boundaries, domain errors, stable responses, typed states, reuse, structure, and contract tests."
+  short_description: "Write readable backend business-layer code"
+  default_prompt: "Use $vk-backend-quality during implementation. Apply readability and cognitive-complexity rules together with backend layer, domain-error, typed-state, reuse, structure, and contract-test gates. Apply cleanup only after targeted checks pass."
